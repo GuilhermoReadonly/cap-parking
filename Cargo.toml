@@ -1,0 +1,23 @@
+[package]
+name = "caparking"
+version = "0.1.0"
+authors = []
+edition = "2018"
+
+[[bin]]
+name = "cap_parking"
+path = "src/main.rs"
+
+[lib]
+name = "cap_parking_lib"
+path = "src/lib.rs"
+
+
+[dependencies]
+log = "0.4.14"
+serde = "1.0.126"
+serde_json = "1.0.64"
+
+[dependencies.rocket]
+features = ["json"]
+version = "0.5.0-rc.1"

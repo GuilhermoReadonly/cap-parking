@@ -1,0 +1,14 @@
+{
+    "residents": [
+        {
+            "id": 1,
+            "name": "Radonde",
+            "parking_spots": [2, 3]
+        },
+        {
+            "id": 2,
+            "name": "Bob Roger",
+            "parking_spots": [5]
+        }
+    ]
+}
