@@ -1,14 +1,12 @@
 {
-    "residents": [
-        {
-            "id": 1,
-            "name": "Radonde",
-            "parking_spots": [2, 3]
-        },
-        {
-            "id": 2,
-            "name": "Bob Roger",
-            "parking_spots": [5]
-        }
-    ]
+  "residents": [
+    {
+      "id": 718,
+      "name": "pilou",
+      "parking_spots": [
+        7,
+        18
+      ]
+    }
+  ]
 }

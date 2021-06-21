@@ -11,7 +11,7 @@ use rocket::{
 use serde::{Deserialize, Serialize};
 
 use crate::routes::index;
-use crate::routes::residents::get_residents;
+use crate::routes::residents::{get_residents, put_resident};
 
 pub mod routes;
 
@@ -54,5 +54,5 @@ fn rocket() -> _ {
 
     rocket::build()
         .mount("/", routes![index])
-        .mount("/api", routes![get_residents])
+        .mount("/api", routes![get_residents, put_resident])
 }

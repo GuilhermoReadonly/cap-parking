@@ -10,7 +10,7 @@ path = "src/main.rs"
 
 [lib]
 name = "cap_parking_lib"
-path = "src/lib.rs"
+path = "src/lib/lib.rs"
 
 
 [dependencies]
