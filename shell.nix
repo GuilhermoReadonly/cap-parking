@@ -5,6 +5,12 @@ stdenv.mkDerivation {
   nativeBuildInputs = [
     rustup
 
+    pkgs.alsaLib
+    pkgs.openssl
+    pkgs.libudev
+    pkgs.pkg-config
+    systemd.dev
+
     # Example Build-time Additional Dependencies
     # pkg-config
     # systemd.dev
