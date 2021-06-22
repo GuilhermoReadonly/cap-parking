@@ -1,17 +1,18 @@
 #[macro_use]
 extern crate rocket;
 
-use rocket::response::{Responder, Response};
 use rocket::{
     http::{ContentType, Status},
-    response,
+    response::{self, Responder},
     serde::json::Json,
-    Request,
+    Request, Response,
 };
 use serde::{Deserialize, Serialize};
 
-use crate::routes::index;
-use crate::routes::residents::{get_residents, put_resident};
+use crate::routes::{
+    files,
+    residents::{get_residents, put_resident},
+};
 
 pub mod routes;
 
@@ -53,6 +54,6 @@ fn rocket() -> _ {
     info!("Starting app...");
 
     rocket::build()
-        .mount("/", routes![index])
+        .mount("/", routes![files])
         .mount("/api", routes![get_residents, put_resident])
 }
