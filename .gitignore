@@ -1,4 +1,6 @@
 /target
+/web-app/target
+/web-server/target
 **/*.rs.bk
 .vscode
 build.rs

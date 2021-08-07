@@ -1,0 +1,12 @@
+[package]
+name = "caparking-app"
+version = "0.1.0"
+authors = []
+edition = "2018"
+
+[[bin]]
+name = "capark-app"
+path = "src/main.rs"
+
+[dependencies]
+yew = "0.18"

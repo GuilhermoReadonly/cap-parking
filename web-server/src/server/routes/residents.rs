@@ -1,4 +1,4 @@
-use cap_parking_lib::Resident;
+use caparking_lib::Resident;
 use rocket::{http::Status, serde::json::Json};
 
 use crate::{ApiResponse, Body};
@@ -7,7 +7,7 @@ use crate::{ApiResponse, Body};
 pub fn get_residents() -> ApiResponse<Vec<Resident>> {
     info!("Get residents...");
 
-    match cap_parking_lib::get_all_residents() {
+    match caparking_lib::get_all_residents() {
         Ok(residents) => ApiResponse::new(Body::Ok(Json(residents)), Status::Ok),
         Err(e) => {
             error!("{}", e);
@@ -25,7 +25,7 @@ pub fn put_resident(resident: Json<Resident>) -> ApiResponse<Vec<Resident>> {
 
     let resident = resident.0;
 
-    match cap_parking_lib::insert_residents(vec![resident]) {
+    match caparking_lib::insert_residents(vec![resident]) {
         Ok(residents) => ApiResponse::new(Body::Ok(Json(residents)), Status::Ok),
         Err(e) => {
             error!("{}", e);
