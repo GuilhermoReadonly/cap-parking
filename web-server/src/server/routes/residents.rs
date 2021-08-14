@@ -1,7 +1,7 @@
 use caparking_lib::Resident;
 use rocket::{http::Status, serde::json::Json};
 
-use crate::{ApiResponse, Body};
+use crate::routes::{ApiResponse, Body};
 
 #[get("/residents")]
 pub fn get_residents() -> ApiResponse<Vec<Resident>> {

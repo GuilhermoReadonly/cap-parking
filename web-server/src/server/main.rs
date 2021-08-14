@@ -1,13 +1,6 @@
 #[macro_use]
 extern crate rocket;
-
-use rocket::{
-    http::{ContentType, Status},
-    response::{self, Responder},
-    serde::json::Json,
-    Request, Response,
-};
-use serde::{Deserialize, Serialize};
+use std::env;
 
 use crate::routes::{
     files,
@@ -16,42 +9,12 @@ use crate::routes::{
 
 pub mod routes;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub enum Body<T> {
-    Ok(T),
-    Err(String),
-}
-
-#[derive(Debug)]
-pub struct ApiResponse<T> {
-    status: Status,
-    body: Body<Json<T>>,
-}
-
-impl<T> ApiResponse<T> {
-    pub fn new(body: Body<Json<T>>, status: Status) -> Self {
-        ApiResponse { status, body }
-    }
-}
-
-impl<'r, T: Serialize> Responder<'r, 'static> for ApiResponse<T> {
-    fn respond_to(self, req: &'r Request) -> response::Result<'static> {
-        match self.body {
-            Body::Ok(t) => Response::build_from(t.respond_to(&req).unwrap())
-                .status(self.status)
-                .header(ContentType::JSON)
-                .ok(),
-            Body::Err(msg) => Response::build_from(msg.respond_to(&req).unwrap())
-                .status(self.status)
-                .header(ContentType::JSON)
-                .ok(),
-        }
-    }
-}
-
 #[launch]
 fn rocket() -> _ {
     info!("Starting app...");
+
+    let cwd = env::current_dir().expect("yes it is");
+    info!("The current directory is {}", cwd.display());
 
     rocket::build()
         .mount("/", routes![files])
