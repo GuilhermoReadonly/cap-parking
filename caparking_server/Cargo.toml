@@ -5,21 +5,15 @@ authors = []
 edition = "2018"
 
 
-[lib]
-name = "caparking_lib"
-path = "src/lib/lib.rs"
-
-
 [[bin]]
 name = "capark-server"
-path = "src/server/main.rs"
-
+path = "src/main.rs"
 
 
 [dependencies]
-log = "0.4.14"
 serde = "1.0.127"
 serde_json = "1.0.66"
+caparking_lib = { path = "../caparking_lib" }
 
 [dependencies.rocket]
 features = ["json"]

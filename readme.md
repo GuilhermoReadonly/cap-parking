@@ -8,6 +8,6 @@ Then go to ```http://localhost:8000/```
 
 ## Run app
 ```bash
-trunk serve ./web-app/index.html
+trunk serve ./caparking_app/index.html
 ```
 Then go to ```http://localhost:8080/```

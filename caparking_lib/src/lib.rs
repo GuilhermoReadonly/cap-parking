@@ -7,7 +7,7 @@ use std::io::{self, BufReader, Write};
 
 const DB_FILE: &str = "./resources/db.json";
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Resident {
     pub id: u32,
     pub name: String,

@@ -1,0 +1,19 @@
+{
+  "residents": [
+    {
+      "id": 718,
+      "name": "pilou",
+      "parking_spots": [
+        7,
+        18
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Los Radédinös",
+      "parking_spots": [
+        1
+      ]
+    }
+  ]
+}

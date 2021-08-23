@@ -1,2 +1,2 @@
 [workspace]
-members = ["web-server", "web-app"]
+members = ["caparking_server", "caparking_app", "caparking_lib"]
