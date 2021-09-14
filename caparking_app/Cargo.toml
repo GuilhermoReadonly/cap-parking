@@ -11,3 +11,5 @@ path = "src/main.rs"
 [dependencies]
 yew = "0.18"
 caparking_lib = { path = "../caparking_lib" }
+rand = "0.8.4"
+getrandom = { version = "0.2", features = ["js"] }

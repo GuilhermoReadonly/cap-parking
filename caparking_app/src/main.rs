@@ -1,33 +1,77 @@
-use caparking_lib::Resident;
+use caparking_lib::Resident as ResidentLib;
 use yew::prelude::*;
 
-enum Msg {
-    ChangeName,
+#[derive(Debug, Default, Clone, Properties)]
+struct Resident {
+    resident: ResidentLib,
 }
 
-struct Model {
-    // `ComponentLink` is like a reference to a component.
-    // It can be used to send messages to the component
-    link: ComponentLink<Self>,
-    value: Resident,
+impl Resident {
+    fn new(name: String, parking_spots: Vec<u32>) -> Self {
+        Self {
+            resident: ResidentLib {
+                id: rand::random(),
+                name,
+                parking_spots,
+            },
+        }
+    }
 }
 
-impl Component for Model {
-    type Message = Msg;
-    type Properties = ();
+struct ResidentComponent {
+    _link: (),
+    props: Resident,
+}
 
-    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self { link, value: Resident::default() }
+impl Component for ResidentComponent {
+    type Message = ();
+    type Properties = Resident;
+
+    fn create(props: Self::Properties, _link: ComponentLink<Self>) -> Self {
+        Self {
+            _link: (),
+            props,
+        }
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
-        match msg {
-            Msg::ChangeName => {
-                self.value.name = "New name !!!".to_string();
-                // the value has changed so we need to
-                // re-render for it to appear on the page
-                true
-            }
+    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
+        false
+    }
+
+    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
+        false
+    }
+
+    fn view(&self) -> Html {
+        html! {
+            <tr>
+                <th>{&self.props.resident.id}</th>
+                <th>{&self.props.resident.name}</th>
+            </tr>
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone)]
+struct MainComponent {
+    // `ComponentLink` is like a reference to a component.
+    // It can be used to send messages to the component
+    link: (),
+    props: Vec<Resident>,
+}
+
+impl Component for MainComponent {
+    type Message = ();
+    type Properties = ();
+
+    fn create(_props: Self::Properties, _link: ComponentLink<Self>) -> Self {
+        let mut props = Vec::default();
+        props.push(Resident::new("Plop1".to_string(), vec![]));
+        props.push(Resident::new("Plop2".to_string(), vec![]));
+        props.push(Resident::new("Plop3".to_string(), vec![]));
+        Self {
+            link: (),
+            props: props,
         }
     }
 
@@ -40,14 +84,24 @@ impl Component for Model {
 
     fn view(&self) -> Html {
         html! {
-            <div>
-                <button onclick=self.link.callback(|_| Msg::ChangeName)>{ "Change dat name" }</button>
-                <p>{ self.value.name.clone() }</p>
-            </div>
-        }
+        <table>
+            {for self.props.iter().map(|item|
+                {
+                    html! {
+                        <>
+                            <ResidentComponent with item.clone() />
+                        </>
+                    }
+                }
+                )}
+        </table> }
+    }
+
+    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
+        false
     }
 }
 
 fn main() {
-    yew::start_app::<Model>();
+    yew::start_app::<MainComponent>();
 }
