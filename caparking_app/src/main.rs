@@ -28,10 +28,7 @@ impl Component for ResidentComponent {
     type Properties = Resident;
 
     fn create(props: Self::Properties, _link: ComponentLink<Self>) -> Self {
-        Self {
-            _link: (),
-            props,
-        }
+        Self { _link: (), props }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {
@@ -85,6 +82,10 @@ impl Component for MainComponent {
     fn view(&self) -> Html {
         html! {
         <table>
+            <tr>
+                <th>{"Id"}</th>
+                <th>{"Name"}</th>
+            </tr>
             {for self.props.iter().map(|item|
                 {
                     html! {
