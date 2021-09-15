@@ -9,7 +9,8 @@ name = "capark-app"
 path = "src/main.rs"
 
 [dependencies]
-yew = "0.18"
+yew = "0.18.0"
 caparking_lib = { path = "../caparking_lib" }
 rand = "0.8.4"
-getrandom = { version = "0.2", features = ["js"] }
+getrandom = { version = "0.2.3", features = ["js"] }
+anyhow = "1.0.44"
