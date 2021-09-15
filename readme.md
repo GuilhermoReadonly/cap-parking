@@ -11,3 +11,11 @@ Then go to ```http://localhost:8000/```
 trunk serve ./caparking_app/index.html
 ```
 Then go to ```http://localhost:8080/```
+
+
+## Setup dev env
+Create a simlink from the dist folder of the webapp to the web-app folder of the server
+```bash
+cd caparking_server/resources/
+ln -s ../../caparking_app/dist/ web-app
+```
