@@ -14,3 +14,5 @@ caparking_lib = { path = "../caparking_lib" }
 rand = "0.8.4"
 getrandom = { version = "0.2.3", features = ["js"] }
 anyhow = "1.0.44"
+log = "0.4.14"
+wasm-logger = "0.2.0"

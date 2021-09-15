@@ -54,8 +54,8 @@ impl Component for ResidentComponent {
     fn view(&self) -> Html {
         html! {
             <tr>
-                <th>{&self.props.resident.id}</th>
-                <th>{&self.props.resident.name}</th>
+                <td>{&self.props.resident.id}</td>
+                <td>{&self.props.resident.name}</td>
             </tr>
         }
     }
@@ -101,24 +101,37 @@ impl Component for MainComponent {
 
     fn view(&self) -> Html {
         html! {
-        <table>
-            <tr>
-                <th>{"Id"}</th>
-                <th>{"Name"}</th>
-            </tr>
-            {for self.residents.iter().map(|item|
-                {
-                    html! {
-                        <>
-                            <ResidentComponent with item.clone() />
-                        </>
-                    }
-                }
-                )}
-        </table> }
+            <table>
+                <caption>{"Residents"}</caption>
+                <thead>
+                    <tr>
+                        <th>{"Id"}</th>
+                        <th>{"Name"}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {for self.residents.iter().map(|item|
+                        {
+                            html! {
+                                <>
+                                    <ResidentComponent with item.clone() />
+                                </>
+                            }
+                        }
+                    )}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="2">{format!("Total: {}", self.residents.len())}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        }
     }
 
     fn update(&mut self, msg: Self::Message) -> ShouldRender {
+        log::info!("Message received: {:?}", msg);
+
         match msg {
             Msg::GetResidents => {
                 // 1. build the request
@@ -145,7 +158,10 @@ impl Component for MainComponent {
                     Ok(residents) => {
                         self.residents = residents.into_iter().map(|r| Resident::from(r)).collect();
                     }
-                    _ => self.residents = vec![],
+                    Err(e) => {
+                        log::error!("Something terrible happened...: {:?}", e);
+                        self.residents = vec![]
+                    }
                 }
                 self.fetch_task = None;
                 // we want to redraw so that the page displays the location of the ISS instead of
@@ -157,5 +173,7 @@ impl Component for MainComponent {
 }
 
 fn main() {
+    wasm_logger::init(wasm_logger::Config::default());
+    log::info!("Starting this garbage web app ! \\ö/");
     yew::start_app::<MainComponent>();
 }
