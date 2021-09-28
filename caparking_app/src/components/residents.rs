@@ -135,8 +135,6 @@ impl Component for ResidentsComponent {
                     }
                 }
                 self.fetch_task = None;
-                // we want to redraw so that the page displays the location of the ISS instead of
-                // 'fetching...'
                 true
             }
         }

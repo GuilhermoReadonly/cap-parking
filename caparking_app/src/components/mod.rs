@@ -1,8 +1,9 @@
-use crate::components::residents::ResidentsComponent;
+use crate::components::{home_page::HomePageComponent, residents::ResidentsComponent};
 use yew::prelude::*;
 use yew_router::{router::Router, Switch};
 
 mod residents;
+mod home_page;
 
 #[derive(Switch, Debug, Clone)]
 pub enum AppRoute {
@@ -36,7 +37,7 @@ impl Component for MainComponent {
                 match switch {
                     AppRoute::Residents => html!{<ResidentsComponent />},
                     AppRoute::Resident(id) => html!{id},
-                    AppRoute::Index => html!{"Welcome home !!!"},
+                    AppRoute::Index => html!{<HomePageComponent />},
                 }
             })
         />
