@@ -10,6 +10,7 @@ path = "src/main.rs"
 
 [dependencies]
 yew = "0.18.0"
+yew-router = "0.15.0"
 caparking_lib = { path = "../caparking_lib" }
 rand = "0.8.4"
 getrandom = { version = "0.2.3", features = ["js"] }

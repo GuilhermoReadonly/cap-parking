@@ -31,7 +31,6 @@ impl From<ResidentLib> for Resident {
     }
 }
 
-
 #[derive(Debug)]
 pub enum Msg {
     GetResidents,

@@ -45,10 +45,10 @@ impl<'r, T: Serialize> Responder<'r, 'static> for ApiResponse<T> {
 
 #[get("/<file..>")]
 pub async fn files(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
-    let file = if file.to_str() == Some("") {
-        PathBuf::from("index.html")
-    } else {
-        file
+    let file = match file.to_str() {
+        Some("") | Some("residents") => PathBuf::from("index.html"),
+        Some(s) if s.starts_with("residents/") => PathBuf::from("index.html"),
+        _ => file,
     };
 
     let path = Path::new("resources/web-app/").join(file);
