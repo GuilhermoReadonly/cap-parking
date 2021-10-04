@@ -8,6 +8,8 @@ use yew::{
     },
 };
 
+use crate::components::header::HeaderComponent;
+
 #[derive(Debug, Default, Clone, Properties)]
 struct Resident {
     resident: ResidentLib,
@@ -71,32 +73,35 @@ impl Component for ResidentsComponent {
 
     fn view(&self) -> Html {
         html! {
-            <table>
-                <caption>{"Residents"}</caption>
-                <thead>
-                    <tr>
-                        <th>{"Id"}</th>
-                        <th>{"Name"}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {for self.residents.iter().map(|item|
-                        {
-                            html! {
-                                <tr>
-                                    <td>{item.resident.id}</td>
-                                    <td>{&item.resident.name}</td>
-                                </tr>
+            <>
+                <HeaderComponent/>
+                <table>
+                    <caption>{"Residents"}</caption>
+                    <thead>
+                        <tr>
+                            <th>{"Id"}</th>
+                            <th>{"Name"}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {for self.residents.iter().map(|item|
+                            {
+                                html! {
+                                    <tr>
+                                        <td>{item.resident.id}</td>
+                                        <td>{&item.resident.name}</td>
+                                    </tr>
+                                }
                             }
-                        }
-                    )}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th colspan="2">{format!("Total: {}", self.residents.len())}</th>
-                    </tr>
-                </tfoot>
-            </table>
+                        )}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="2">{format!("Total: {}", self.residents.len())}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </>
         }
     }
 

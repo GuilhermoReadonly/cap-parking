@@ -1,9 +1,10 @@
-use crate::components::{home_page::HomePageComponent, residents::ResidentsComponent};
+use crate::components::{page_home::HomePageComponent, page_residents::ResidentsComponent};
 use yew::prelude::*;
 use yew_router::{router::Router, Switch};
 
-mod residents;
-mod home_page;
+mod header;
+mod page_home;
+mod page_residents;
 
 #[derive(Switch, Debug, Clone)]
 pub enum AppRoute {
@@ -19,7 +20,7 @@ pub enum AppRoute {
 pub(crate) struct MainComponent {}
 
 impl Component for MainComponent {
-    type Message = residents::Msg;
+    type Message = ();
     type Properties = ();
 
     fn create(_props: Self::Properties, _link: ComponentLink<Self>) -> Self {
@@ -41,7 +42,6 @@ impl Component for MainComponent {
                 }
             })
         />
-
         }
     }
 
