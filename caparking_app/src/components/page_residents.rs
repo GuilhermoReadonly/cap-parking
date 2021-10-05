@@ -8,7 +8,6 @@ use yew::{
     },
 };
 
-use crate::components::header::HeaderComponent;
 
 #[derive(Debug, Default, Clone, Properties)]
 struct Resident {
@@ -74,7 +73,6 @@ impl Component for ResidentsComponent {
     fn view(&self) -> Html {
         html! {
             <>
-                <HeaderComponent/>
                 <table>
                     <caption>{"Residents"}</caption>
                     <thead>

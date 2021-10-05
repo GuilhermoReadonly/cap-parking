@@ -1,6 +1,5 @@
 use yew::prelude::*;
 
-use crate::components::header::HeaderComponent;
 
 #[derive(Debug)]
 pub(crate) struct HomePageComponent {}
@@ -20,7 +19,6 @@ impl Component for HomePageComponent {
     fn view(&self) -> Html {
         html! {
             <>
-                <HeaderComponent/>
                 <h1>{"Cap Parking"}</h1>
                 <p>{"Welcome to the POC of parking sharing application for residences"}</p>
             </>

@@ -1,4 +1,6 @@
-use crate::components::{page_home::HomePageComponent, page_residents::ResidentsComponent};
+use crate::components::{
+    header::HeaderComponent, page_home::HomePageComponent, page_residents::ResidentsComponent,
+};
 use yew::prelude::*;
 use yew_router::{router::Router, Switch};
 
@@ -33,15 +35,22 @@ impl Component for MainComponent {
 
     fn view(&self) -> Html {
         html! {
-            <Router<AppRoute, ()>
-            render = Router::render(|switch: AppRoute| {
-                match switch {
-                    AppRoute::Residents => html!{<ResidentsComponent />},
-                    AppRoute::Resident(id) => html!{id},
-                    AppRoute::Index => html!{<HomePageComponent />},
-                }
-            })
-        />
+            <div class="grid-container">
+                <div class="header">
+                    <HeaderComponent/>
+                </div>
+                <div class="content">
+                <Router<AppRoute, ()>
+                    render = Router::render(|switch: AppRoute| {
+                        match switch {
+                            AppRoute::Residents => html!{<ResidentsComponent/>},
+                            AppRoute::Resident(id) => html!{id},
+                            AppRoute::Index => html!{<HomePageComponent/>},
+                        }
+                    })
+                />
+                </div>
+            </div>
         }
     }
 

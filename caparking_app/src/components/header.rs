@@ -20,14 +20,14 @@ impl Component for HeaderComponent {
 
     fn view(&self) -> Html {
         html! {
-            <>
-                <RouterAnchor<AppRoute> route=AppRoute::Index>
+            <div class="topnav">
+                <RouterAnchor<AppRoute> classes="nav-elt" route=AppRoute::Index>
                     {"Home"}
                 </RouterAnchor<AppRoute>>
-                <RouterAnchor<AppRoute> route=AppRoute::Residents>
+                <RouterAnchor<AppRoute> classes="nav-elt" route=AppRoute::Residents>
                     {"Residents"}
                 </RouterAnchor<AppRoute>>
-            </>
+            </div>
         }
     }
 
