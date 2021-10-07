@@ -7,9 +7,6 @@ use yew::{
         FetchService,
     },
 };
-use yew_router::components::RouterAnchor;
-
-use crate::components::AppRoute;
 
 #[derive(Debug, Default, Clone, Properties)]
 struct Resident {
@@ -36,31 +33,36 @@ impl From<ResidentLib> for Resident {
 
 #[derive(Debug)]
 pub enum Msg {
-    GetResidents,
-    GetResidentsResponse(Result<Vec<ResidentLib>, anyhow::Error>),
+    GetResident(u32),
+    GetResidentResponse(Result<ResidentLib, anyhow::Error>),
 }
 
 #[derive(Debug)]
-pub(super) struct ResidentsComponent {
+pub(super) struct ResidentComponent {
     // `ComponentLink` is like a reference to a component.
     // It can be used to send messages to the component
     link: ComponentLink<Self>,
-    residents: Vec<Resident>,
+    props: PageProperties,
+    resident: Option<Resident>,
     fetch_task: Option<FetchTask>,
 }
 
-impl Component for ResidentsComponent {
+#[derive(Debug, Clone, Properties)]
+pub(super) struct PageProperties {
+    pub id: u32,
+}
+
+impl Component for ResidentComponent {
     type Message = Msg;
-    type Properties = ();
+    type Properties = PageProperties;
 
-    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let residents = Vec::default();
-
-        link.send_message(Msg::GetResidents);
+    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+        link.send_message(Msg::GetResident(props.id));
 
         Self {
             link,
-            residents,
+            props: PageProperties{id: 0},
+            resident: None,
             fetch_task: None,
         }
     }
@@ -75,36 +77,7 @@ impl Component for ResidentsComponent {
     fn view(&self) -> Html {
         html! {
             <>
-                <table>
-                    <caption>{"Residents"}</caption>
-                    <thead>
-                        <tr>
-                            <th>{"Id"}</th>
-                            <th>{"Name"}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {for self.residents.iter().map(|item|
-                            {
-                                html! {
-                                    <tr>
-                                        <td>{item.resident.id}</td>
-                                        <td>
-                                            <RouterAnchor<AppRoute> route=AppRoute::Resident(item.resident.id)>
-                                                {&item.resident.name}
-                                            </RouterAnchor<AppRoute>>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                        )}
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="2">{format!("Total: {}", self.residents.len())}</th>
-                        </tr>
-                    </tfoot>
-                </table>
+                {format!("ID: {} \nResident: {:?}", self.props.id, self.resident)}
             </>
         }
     }
@@ -113,16 +86,16 @@ impl Component for ResidentsComponent {
         log::info!("Message received: {:?}", msg);
 
         match msg {
-            Msg::GetResidents => {
+            Msg::GetResident(id) => {
                 // 1. build the request
-                let request = Request::get("/api/residents")
+                let request = Request::get(format!("/api/resident/{}", id))
                     .body(Nothing)
                     .expect("Could not build request.");
                 // 2. construct a callback
                 let callback = self.link.callback(
-                    |response: Response<Json<Result<Vec<ResidentLib>, anyhow::Error>>>| {
+                    |response: Response<Json<Result<ResidentLib, anyhow::Error>>>| {
                         let Json(data) = response.into_body();
-                        Msg::GetResidentsResponse(data)
+                        Msg::GetResidentResponse(data)
                     },
                 );
                 // 3. pass the request and callback to the fetch service
@@ -133,14 +106,14 @@ impl Component for ResidentsComponent {
                 // so return 'true'
                 true
             }
-            Msg::GetResidentsResponse(response) => {
+            Msg::GetResidentResponse(response) => {
                 match response {
-                    Ok(residents) => {
-                        self.residents = residents.into_iter().map(|r| Resident::from(r)).collect();
+                    Ok(resident) => {
+                        self.resident = Some(Resident::from(resident));
                     }
                     Err(e) => {
                         log::error!("Something terrible happened...: {:?}", e);
-                        self.residents = vec![]
+                        self.resident = None
                     }
                 }
                 self.fetch_task = None;

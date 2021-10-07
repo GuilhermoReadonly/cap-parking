@@ -1,6 +1,5 @@
 use yew::prelude::*;
 
-
 #[derive(Debug)]
 pub(crate) struct HomePageComponent {}
 

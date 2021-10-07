@@ -1,11 +1,13 @@
 use crate::components::{
-    header::HeaderComponent, page_home::HomePageComponent, page_residents::ResidentsComponent,
+    header::HeaderComponent, page_home::HomePageComponent, page_resident::ResidentComponent,
+    page_residents::ResidentsComponent,
 };
 use yew::prelude::*;
 use yew_router::{router::Router, Switch};
 
 mod header;
 mod page_home;
+mod page_resident;
 mod page_residents;
 
 #[derive(Switch, Debug, Clone)]
@@ -44,7 +46,7 @@ impl Component for MainComponent {
                     render = Router::render(|switch: AppRoute| {
                         match switch {
                             AppRoute::Residents => html!{<ResidentsComponent/>},
-                            AppRoute::Resident(id) => html!{id},
+                            AppRoute::Resident(id) => html!{<ResidentComponent id=id/>},
                             AppRoute::Index => html!{<HomePageComponent/>},
                         }
                     })
