@@ -76,9 +76,18 @@ impl Component for ResidentComponent {
 
     fn view(&self) -> Html {
         html! {
-            <>
-                {format!("ID: {} \nResident: {:?}", self.props.id, self.resident)}
-            </>
+            match &self.resident {
+                Some(r) => html! {
+                    <>
+                    <h2>{&r.resident.name}</h2>
+                    <p>{format!("Id: {}", &r.resident.id)}</p>
+                    <p>{format!("Parking: {:?}", &r.resident.parking_spots)}</p>
+                    </>
+                },
+                _ => html! {
+                    <p>{"Something, somewhere, went terribly wrong..."}</p>
+                }
+            } 
         }
     }
 

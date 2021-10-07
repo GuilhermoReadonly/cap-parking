@@ -1,22 +1,10 @@
 :root {
-  --color-custom-dark: #333;
-  --color-custom-light: #f2f2f2;
+  --color-custom-dark: rgb(31, 31, 31);
+  --color-custom-light: #dddddd;
 }
 
-.header {
-  grid-area: header;
-}
-.content {
-  grid-area: content;
-}
-
-.grid-container {
-  display: grid;
-  grid-template-areas:
-    "header header header"
-    ". content .";
-  grid-template-columns: 5em auto 5em;
-  gap: 1em;
+body {
+  color: var(--color-custom-dark);
 }
 
 table {
@@ -38,6 +26,22 @@ caption {
   padding: 0.3em;
   color: var(--color-custom-light);
   background: var(--color-custom-dark);
+}
+
+.header {
+  grid-area: header;
+}
+.content {
+  grid-area: content;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-areas:
+    "header header header"
+    ". content .";
+  grid-template-columns: 5em auto 5em;
+  gap: 1em;
 }
 
 /* Style the top navigation bar */
