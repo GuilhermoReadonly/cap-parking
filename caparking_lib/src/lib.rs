@@ -14,21 +14,31 @@ pub struct Resident {
     pub parking_spots: Vec<u32>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Db {
     pub residents: Vec<Resident>,
-}
-
-impl Db {
-    fn new() -> Self {
-        Db { residents: vec![] }
-    }
 }
 
 pub fn get_all_residents() -> Result<Vec<Resident>, Box<dyn Error>> {
     info!("get_all_residents...");
     let db: Db = open_db()?;
     Ok(db.residents)
+}
+
+pub fn get_resident(id: u32) -> Result<Option<Resident>, Box<dyn Error>> {
+    info!("get_residents: {}...", id);
+    let db: Db = open_db()?;
+
+    let mut resident: Option<Resident> = None;
+
+    for r in db.residents.into_iter() {
+        if r.id == id {
+            resident = Some(r);
+            break;
+        }
+    }
+
+    Ok(resident)
 }
 
 pub fn insert_residents(mut residents: Vec<Resident>) -> Result<Vec<Resident>, Box<dyn Error>> {
@@ -54,7 +64,7 @@ fn open_db() -> Result<Db, Box<dyn Error>> {
         Ok(f) => Ok(f),
         Err(e) if e.kind() == io::ErrorKind::NotFound => {
             warn!("DB file {} not found, create it...", DB_FILE);
-            let db = Db::new();
+            let db = Db::default();
             let mut file = File::create(DB_FILE)?;
             let db_content = serde_json::to_vec_pretty(&db).unwrap();
             file.write_all(db_content.as_slice())?;

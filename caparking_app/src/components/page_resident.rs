@@ -61,7 +61,7 @@ impl Component for ResidentComponent {
 
         Self {
             link,
-            props: PageProperties{id: 0},
+            props,
             resident: None,
             fetch_task: None,
         }

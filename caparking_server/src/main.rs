@@ -4,7 +4,7 @@ use std::env;
 
 use crate::routes::{
     files,
-    residents::{get_residents, put_resident},
+    residents::{get_resident, get_residents, put_resident},
 };
 
 pub mod routes;
@@ -18,5 +18,5 @@ fn rocket() -> _ {
 
     rocket::build()
         .mount("/", routes![files])
-        .mount("/api", routes![get_residents, put_resident])
+        .mount("/api", routes![get_residents, get_resident, put_resident])
 }

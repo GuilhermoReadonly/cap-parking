@@ -19,6 +19,26 @@ pub fn get_residents() -> ApiResponse<Vec<Resident>> {
     }
 }
 
+#[get("/resident/<id>")]
+pub fn get_resident(id: u32) -> ApiResponse<Resident> {
+    info!("Get resident {}...", id);
+
+    match caparking_lib::get_resident(id) {
+        Ok(Some(resident)) => ApiResponse::new(Body::Ok(Json(resident)), Status::Ok),
+        Ok(None) => ApiResponse::new(
+            Body::Err(format!("{{\"error\": \"resident {} not found\"}}", id)),
+            Status::NotFound,
+        ),
+        Err(e) => {
+            error!("{}", e);
+            ApiResponse::new(
+                Body::Err(format!("{{\"error\": \"{}\"}}", e)),
+                Status::ImATeapot,
+            )
+        }
+    }
+}
+
 #[put("/resident", data = "<resident>")]
 pub fn put_resident(resident: Json<Resident>) -> ApiResponse<Vec<Resident>> {
     info!("Put residents...");
