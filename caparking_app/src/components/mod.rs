@@ -13,7 +13,7 @@ mod page_residents;
 #[derive(Switch, Debug, Clone)]
 pub enum AppRoute {
     #[to = "/residents/{id}"]
-    Resident(u32),
+    Resident(u128),
     #[to = "/residents"]
     Residents,
     #[to = "/"]

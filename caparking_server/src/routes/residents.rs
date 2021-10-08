@@ -20,7 +20,7 @@ pub fn get_residents() -> ApiResponse<Vec<Resident>> {
 }
 
 #[get("/resident/<id>")]
-pub fn get_resident(id: u32) -> ApiResponse<Resident> {
+pub fn get_resident(id: u128) -> ApiResponse<Resident> {
     info!("Get resident {}...", id);
 
     match caparking_lib::get_resident(id) {

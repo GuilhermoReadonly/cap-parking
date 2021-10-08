@@ -9,7 +9,7 @@ const DB_FILE: &str = "./resources/db.json";
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct Resident {
-    pub id: u32,
+    pub id: u128,
     pub name: String,
     pub parking_spots: Vec<u32>,
 }
@@ -25,7 +25,7 @@ pub fn get_all_residents() -> Result<Vec<Resident>, Box<dyn Error>> {
     Ok(db.residents)
 }
 
-pub fn get_resident(id: u32) -> Result<Option<Resident>, Box<dyn Error>> {
+pub fn get_resident(id: u128) -> Result<Option<Resident>, Box<dyn Error>> {
     info!("get_residents: {}...", id);
     let db: Db = open_db()?;
 

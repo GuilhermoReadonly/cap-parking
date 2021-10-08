@@ -33,7 +33,7 @@ impl From<ResidentLib> for Resident {
 
 #[derive(Debug)]
 pub enum Msg {
-    GetResident(u32),
+    GetResident(u128),
     GetResidentResponse(Result<ResidentLib, anyhow::Error>),
 }
 
@@ -49,7 +49,7 @@ pub(super) struct ResidentComponent {
 
 #[derive(Debug, Clone, Properties)]
 pub(super) struct PageProperties {
-    pub id: u32,
+    pub id: u128,
 }
 
 impl Component for ResidentComponent {
