@@ -87,7 +87,7 @@ impl Component for ResidentComponent {
                 _ => html! {
                     <p>{"Something, somewhere, went terribly wrong..."}</p>
                 }
-            } 
+            }
         }
     }
 

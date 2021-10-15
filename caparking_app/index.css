@@ -60,6 +60,11 @@ caption {
   text-decoration: none;
 }
 
+/* Style the login link */
+.topnav .login-elt {
+  float: right;
+}
+
 /* Change color on hover */
 .topnav a:hover {
   background-color: var(--color-custom-light);

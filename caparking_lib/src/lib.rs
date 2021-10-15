@@ -8,6 +8,17 @@ use std::io::{self, BufReader, Write};
 const DB_FILE: &str = "./resources/db.json";
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
+pub struct Token {
+    pub token: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct LoginForm {
+    pub login: String,
+    pub password: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct Resident {
     pub id: u128,
     pub name: String,

@@ -1,3 +1,4 @@
+use rocket::request::{FromRequest, Outcome};
 use rocket::{fs::NamedFile, response::status::NotFound};
 use rocket::{
     http::{ContentType, Status},
@@ -28,6 +29,66 @@ impl<T> ApiResponse<T> {
     }
 }
 
+pub struct Token<'r> {
+    raw_token: &'r str,
+}
+struct RawToken<'r>(&'r str);
+
+#[derive(Debug)]
+pub enum TokenError {
+    Missing,
+    Invalid,
+    Expired,
+}
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for Token<'r> {
+    type Error = TokenError;
+
+    async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
+        fn check_token_presence(raw_token: Option<&str>) -> Result<RawToken, TokenError> {
+            match raw_token {
+                Some(t) => Ok(RawToken(t)),
+                None => Err(TokenError::Missing),
+            }
+        }
+        fn decode_raw_token(raw_token: Result<RawToken, TokenError>) -> Result<Token, TokenError> {
+            match raw_token {
+                Ok(t) => {
+                    if t.0.starts_with("718") {
+                        Ok(Token { raw_token: t.0 })
+                    } else {
+                        Err(TokenError::Invalid)
+                    }
+                }
+                Err(e) => Err(e),
+            }
+        }
+        fn validate_token(token: Result<Token, TokenError>) -> Result<Token, TokenError> {
+            match token {
+                Ok(t) => {
+                    if t.raw_token.starts_with("718718") {
+                        Ok(t)
+                    } else {
+                        Err(TokenError::Expired)
+                    }
+                }
+                Err(e) => Err(e),
+            }
+        }
+
+        let option_raw_token = req.headers().get_one("Authorization");
+        let raw_token = check_token_presence(option_raw_token);
+        let token_decoded = decode_raw_token(raw_token);
+        let token_validated = validate_token(token_decoded);
+
+        match token_validated {
+            Ok(t) => Outcome::Success(t),
+            Err(token_error) => Outcome::Failure((Status::BadRequest, token_error)),
+        }
+    }
+}
+
 impl<'r, T: Serialize> Responder<'r, 'static> for ApiResponse<T> {
     fn respond_to(self, req: &'r Request) -> response::Result<'static> {
         match self.body {
@@ -46,8 +107,8 @@ impl<'r, T: Serialize> Responder<'r, 'static> for ApiResponse<T> {
 #[get("/<file..>")]
 pub async fn files(file: PathBuf) -> Result<NamedFile, NotFound<String>> {
     let file = match file.to_str() {
-        Some("") | Some("residents") => PathBuf::from("index.html"),
-        Some(s) if s.starts_with("residents/") => PathBuf::from("index.html"),
+        Some("") => PathBuf::from("index.html"),
+        Some(s) if s.starts_with("app") => PathBuf::from("index.html"),
         _ => file,
     };
 

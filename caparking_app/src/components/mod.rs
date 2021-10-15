@@ -1,21 +1,26 @@
 use crate::components::{
-    header::HeaderComponent, page_home::HomePageComponent, page_resident::ResidentComponent,
-    page_residents::ResidentsComponent,
+    header::HeaderComponent, page_home::HomePageComponent, page_login::LoginPageComponent,
+    page_resident::ResidentComponent, page_residents::ResidentsComponent,
 };
 use yew::prelude::*;
 use yew_router::{router::Router, Switch};
 
 mod header;
 mod page_home;
+mod page_login;
 mod page_resident;
 mod page_residents;
 
 #[derive(Switch, Debug, Clone)]
 pub enum AppRoute {
-    #[to = "/residents/{id}"]
+    #[to = "/app/resident/{id}"]
     Resident(u128),
-    #[to = "/residents"]
+    #[to = "/app/residents"]
     Residents,
+    #[to = "/app/login"]
+    Login,
+    #[to = "/app"]
+    Home,
     #[to = "/"]
     Index,
 }
@@ -45,9 +50,11 @@ impl Component for MainComponent {
                 <Router<AppRoute, ()>
                     render = Router::render(|switch: AppRoute| {
                         match switch {
+                            AppRoute::Index => html!{<HomePageComponent/>},
+                            AppRoute::Home => html!{<HomePageComponent/>},
                             AppRoute::Residents => html!{<ResidentsComponent/>},
                             AppRoute::Resident(id) => html!{<ResidentComponent id=id/>},
-                            AppRoute::Index => html!{<HomePageComponent/>},
+                            AppRoute::Login => html!{<LoginPageComponent/>},
                         }
                     })
                 />

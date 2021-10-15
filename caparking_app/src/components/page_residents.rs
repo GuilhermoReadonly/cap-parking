@@ -76,11 +76,11 @@ impl Component for ResidentsComponent {
         html! {
             <>
                 <table>
-                    <caption>{"Residents"}</caption>
+                    <caption>{"Résidents"}</caption>
                     <thead>
                         <tr>
                             <th>{"Id"}</th>
-                            <th>{"Name"}</th>
+                            <th>{"Nom"}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -116,6 +116,7 @@ impl Component for ResidentsComponent {
             Msg::GetResidents => {
                 // 1. build the request
                 let request = Request::get("/api/residents")
+                    .header("Authorization", "718718123456")
                     .body(Nothing)
                     .expect("Could not build request.");
                 // 2. construct a callback

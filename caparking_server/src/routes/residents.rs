@@ -3,8 +3,10 @@ use rocket::{http::Status, serde::json::Json};
 
 use crate::routes::{ApiResponse, Body};
 
+use super::Token;
+
 #[get("/residents")]
-pub fn get_residents() -> ApiResponse<Vec<Resident>> {
+pub fn get_residents(_token: Token) -> ApiResponse<Vec<Resident>> {
     info!("Get residents...");
 
     match caparking_lib::get_all_residents() {

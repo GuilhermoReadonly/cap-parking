@@ -19,7 +19,7 @@ impl Component for HomePageComponent {
         html! {
             <>
                 <h1>{"Cap Parking"}</h1>
-                <p>{"Welcome to the POC of parking sharing application for residences"}</p>
+                <p>{"Application de partage de places de parking entre voisins"}</p>
             </>
         }
     }
