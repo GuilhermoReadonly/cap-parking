@@ -1,4 +1,4 @@
-use caparking_lib::Resident;
+use caparking_lib::{Resident, ResidentSafe};
 use rocket::{http::Status, serde::json::Json};
 
 use crate::routes::{ApiResponse, Body};
@@ -6,11 +6,14 @@ use crate::routes::{ApiResponse, Body};
 use super::Token;
 
 #[get("/residents")]
-pub fn get_residents(_token: Token) -> ApiResponse<Vec<Resident>> {
+pub fn get_residents(_token: Token) -> ApiResponse<Vec<ResidentSafe>> {
     info!("Get residents...");
 
     match caparking_lib::get_all_residents() {
-        Ok(residents) => ApiResponse::new(Body::Ok(Json(residents)), Status::Ok),
+        Ok(residents) => {
+            let residents_safe = residents.into_iter().map(Into::into).collect();
+            ApiResponse::new(Body::Ok(Json(residents_safe)), Status::Ok)
+        }
         Err(e) => {
             error!("{}", e);
             ApiResponse::new(
@@ -22,11 +25,11 @@ pub fn get_residents(_token: Token) -> ApiResponse<Vec<Resident>> {
 }
 
 #[get("/resident/<id>")]
-pub fn get_resident(id: u128) -> ApiResponse<Resident> {
+pub fn get_resident(id: u128) -> ApiResponse<ResidentSafe> {
     info!("Get resident {}...", id);
 
     match caparking_lib::get_resident(id) {
-        Ok(Some(resident)) => ApiResponse::new(Body::Ok(Json(resident)), Status::Ok),
+        Ok(Some(resident)) => ApiResponse::new(Body::Ok(Json(resident.into())), Status::Ok),
         Ok(None) => ApiResponse::new(
             Body::Err(format!("{{\"error\": \"resident {} not found\"}}", id)),
             Status::NotFound,

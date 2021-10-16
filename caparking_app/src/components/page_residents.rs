@@ -1,4 +1,4 @@
-use caparking_lib::Resident as ResidentLib;
+use caparking_lib::ResidentSafe as ResidentLib;
 use yew::{
     format::{Json, Nothing},
     prelude::*,
@@ -14,18 +14,6 @@ use crate::components::AppRoute;
 #[derive(Debug, Default, Clone, Properties)]
 struct Resident {
     resident: ResidentLib,
-}
-
-impl Resident {
-    pub fn _new(name: String, parking_spots: Vec<u32>) -> Self {
-        Self {
-            resident: ResidentLib {
-                id: rand::random(),
-                name,
-                parking_spots,
-            },
-        }
-    }
 }
 
 impl From<ResidentLib> for Resident {

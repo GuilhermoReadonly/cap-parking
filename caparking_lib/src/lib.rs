@@ -19,9 +19,30 @@ pub struct LoginForm {
 }
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
+pub struct ResidentSafe {
+    pub id: u128,
+    pub name: String,
+    pub login: String,
+    pub parking_spots: Vec<u32>,
+}
+
+impl From<Resident> for ResidentSafe {
+    fn from(r: Resident) -> Self {
+        Self {
+            id: r.id,
+            name: r.name,
+            login: r.login,
+            parking_spots: r.parking_spots,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Default, Clone)]
 pub struct Resident {
     pub id: u128,
     pub name: String,
+    pub login: String,
+    pub password: String,
     pub parking_spots: Vec<u32>,
 }
 
@@ -37,13 +58,29 @@ pub fn get_all_residents() -> Result<Vec<Resident>, Box<dyn Error>> {
 }
 
 pub fn get_resident(id: u128) -> Result<Option<Resident>, Box<dyn Error>> {
-    info!("get_residents: {}...", id);
+    info!("get_resident: {}...", id);
     let db: Db = open_db()?;
 
     let mut resident: Option<Resident> = None;
 
     for r in db.residents.into_iter() {
         if r.id == id {
+            resident = Some(r);
+            break;
+        }
+    }
+
+    Ok(resident)
+}
+
+pub fn get_resident_by_login(login: String) -> Result<Option<Resident>, Box<dyn Error>> {
+    info!("get_resident_by_login: {}...", login);
+    let db: Db = open_db()?;
+
+    let mut resident: Option<Resident> = None;
+
+    for r in db.residents.into_iter() {
+        if r.login == login {
             resident = Some(r);
             break;
         }

@@ -3,6 +3,8 @@
     {
       "id": 718,
       "name": "Jean-Kevin Duplantu",
+      "login": "JKD",
+      "password": "1234",
       "parking_spots": [
         7,
         18
@@ -11,6 +13,8 @@
     {
       "id": 7,
       "name": "Los Radondiños",
+      "login": "718",
+      "password": "0000",
       "parking_spots": [
         1
       ]
