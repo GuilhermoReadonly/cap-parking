@@ -1,8 +1,10 @@
 use caparking_lib::{Resident, ResidentSafe};
 use rocket::{http::Status, serde::json::Json};
 
-use crate::{guards::TokenDecoded, routes::{ApiResponse, Body}};
-
+use crate::{
+    guards::TokenDecoded,
+    routes::{ApiResponse, Body},
+};
 
 #[get("/residents")]
 pub fn get_residents(_token: TokenDecoded) -> ApiResponse<Vec<ResidentSafe>> {

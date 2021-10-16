@@ -11,9 +11,11 @@ path = "src/main.rs"
 
 
 [dependencies]
+caparking_lib = { path = "../caparking_lib" }
 serde = "1.0.127"
 serde_json = "1.0.66"
-caparking_lib = { path = "../caparking_lib" }
+jsonwebtoken = "7.2.0"
+chrono = "0.4.19"
 
 [dependencies.rocket]
 features = ["json"]

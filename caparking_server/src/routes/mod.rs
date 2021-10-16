@@ -1,4 +1,3 @@
-use rocket::request::{FromRequest, Outcome};
 use rocket::{fs::NamedFile, response::status::NotFound};
 use rocket::{
     http::{ContentType, Status},
@@ -29,7 +28,6 @@ impl<T> ApiResponse<T> {
         ApiResponse { status, body }
     }
 }
-
 impl<'r, T: Serialize> Responder<'r, 'static> for ApiResponse<T> {
     fn respond_to(self, req: &'r Request) -> response::Result<'static> {
         match self.body {
