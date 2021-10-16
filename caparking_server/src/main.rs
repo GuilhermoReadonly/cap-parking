@@ -8,7 +8,8 @@ use crate::routes::{
     residents::{get_resident, get_residents, put_resident},
 };
 
-pub mod routes;
+mod guards;
+mod routes;
 
 #[launch]
 fn rocket() -> _ {
