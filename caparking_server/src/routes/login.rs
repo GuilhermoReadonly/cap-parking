@@ -1,7 +1,10 @@
-use crate::routes::{ApiResponse, Body};
+use crate::{
+    routes::{ApiResponse, Body},
+    Secret,
+};
 use caparking_lib::{LoginForm, ResidentSafe, Token};
 use chrono::{Duration, Utc};
-use rocket::{http::Status, log::private::warn, serde::json::Json};
+use rocket::{http::Status, log::private::warn, serde::json::Json, State};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -11,7 +14,7 @@ struct Claims {
 }
 
 #[post("/login", data = "<login_form>")]
-pub fn login(login_form: Json<LoginForm>) -> ApiResponse<Token> {
+pub fn login(login_form: Json<LoginForm>, secret: &State<Secret>) -> ApiResponse<Token> {
     info!("login...");
 
     let resident = caparking_lib::get_resident_by_login(login_form.login.clone());
@@ -24,7 +27,7 @@ pub fn login(login_form: Json<LoginForm>) -> ApiResponse<Token> {
             let token = jsonwebtoken::encode(
                 &jsonwebtoken::Header::default(),
                 &claims,
-                &jsonwebtoken::EncodingKey::from_secret("secret".as_ref()),
+                &jsonwebtoken::EncodingKey::from_secret(secret.0.as_ref()),
             );
 
             match token {

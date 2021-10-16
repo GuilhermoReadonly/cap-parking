@@ -156,6 +156,7 @@ dependencies = [
  "caparking_lib",
  "chrono",
  "jsonwebtoken",
+ "rand",
  "rocket",
  "serde",
  "serde_json",
