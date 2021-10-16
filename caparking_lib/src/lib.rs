@@ -8,8 +8,14 @@ use std::io::{self, BufReader, Write};
 const DB_FILE: &str = "./resources/db.json";
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
-pub struct Token {
+pub struct LoginResponse {
     pub token: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Claims {
+    pub exp: usize, // Required (validate_exp defaults to true in validation). Expiration time (as UTC timestamp)
+    pub sub: ResidentSafe, // Optional. Subject (whom token refers to)
 }
 
 #[derive(Debug, Serialize, Deserialize, Default)]

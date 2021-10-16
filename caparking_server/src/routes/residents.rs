@@ -2,12 +2,12 @@ use caparking_lib::{Resident, ResidentSafe};
 use rocket::{http::Status, serde::json::Json};
 
 use crate::{
-    guards::TokenDecoded,
+    guards::SecurityGuard,
     routes::{ApiResponse, Body},
 };
 
 #[get("/residents")]
-pub fn get_residents(_token: TokenDecoded) -> ApiResponse<Vec<ResidentSafe>> {
+pub fn get_residents(_token: SecurityGuard) -> ApiResponse<Vec<ResidentSafe>> {
     info!("Get residents...");
 
     match caparking_lib::get_all_residents() {
@@ -26,7 +26,7 @@ pub fn get_residents(_token: TokenDecoded) -> ApiResponse<Vec<ResidentSafe>> {
 }
 
 #[get("/resident/<id>")]
-pub fn get_resident(id: u128) -> ApiResponse<ResidentSafe> {
+pub fn get_resident(id: u128, _token: SecurityGuard) -> ApiResponse<ResidentSafe> {
     info!("Get resident {}...", id);
 
     match caparking_lib::get_resident(id) {
@@ -46,7 +46,7 @@ pub fn get_resident(id: u128) -> ApiResponse<ResidentSafe> {
 }
 
 #[put("/resident", data = "<resident>")]
-pub fn put_resident(resident: Json<Resident>) -> ApiResponse<Vec<Resident>> {
+pub fn put_resident(resident: Json<Resident>, _token: SecurityGuard) -> ApiResponse<Vec<Resident>> {
     info!("Put residents...");
 
     let resident = resident.0;

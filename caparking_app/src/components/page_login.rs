@@ -1,4 +1,4 @@
-use caparking_lib::{LoginForm, Token};
+use caparking_lib::{LoginForm, LoginResponse};
 use log::{error, info};
 use yew::{
     format::Json,
@@ -12,7 +12,7 @@ use yew::{
 #[derive(Debug)]
 pub enum Msg {
     SendLogin,
-    PostLoginResponse(Result<Token, anyhow::Error>),
+    PostLoginResponse(Result<LoginResponse, anyhow::Error>),
     UpdateLogin(String),
     UpdatePassword(String),
 }
@@ -83,12 +83,12 @@ impl Component for LoginPageComponent {
                     .body(Json(&self.login_form))
                     .expect("Could not build request.");
                 // 2. construct a callback
-                let callback =
-                    self.link
-                        .callback(|response: Response<Json<Result<Token, anyhow::Error>>>| {
-                            let Json(data) = response.into_body();
-                            Msg::PostLoginResponse(data)
-                        });
+                let callback = self.link.callback(
+                    |response: Response<Json<Result<LoginResponse, anyhow::Error>>>| {
+                        let Json(data) = response.into_body();
+                        Msg::PostLoginResponse(data)
+                    },
+                );
                 // 3. pass the request and callback to the fetch service
                 let task = FetchService::fetch(request, callback).expect("failed to start request");
                 // 4. store the task so it isn't canceled immediately

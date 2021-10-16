@@ -2,19 +2,12 @@ use crate::{
     routes::{ApiResponse, Body},
     Secret,
 };
-use caparking_lib::{LoginForm, ResidentSafe, Token};
+use caparking_lib::{Claims, LoginForm, LoginResponse};
 use chrono::{Duration, Utc};
 use rocket::{http::Status, log::private::warn, serde::json::Json, State};
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Serialize, Deserialize)]
-struct Claims {
-    exp: usize, // Required (validate_exp defaults to true in validation). Expiration time (as UTC timestamp)
-    sub: ResidentSafe, // Optional. Subject (whom token refers to)
-}
 
 #[post("/login", data = "<login_form>")]
-pub fn login(login_form: Json<LoginForm>, secret: &State<Secret>) -> ApiResponse<Token> {
+pub fn login(login_form: Json<LoginForm>, secret: &State<Secret>) -> ApiResponse<LoginResponse> {
     info!("login...");
 
     let resident = caparking_lib::get_resident_by_login(login_form.login.clone());
@@ -31,7 +24,7 @@ pub fn login(login_form: Json<LoginForm>, secret: &State<Secret>) -> ApiResponse
             );
 
             match token {
-                Ok(t) => ApiResponse::new(Body::Ok(Json(Token { token: t })), Status::Ok),
+                Ok(t) => ApiResponse::new(Body::Ok(Json(LoginResponse { token: t })), Status::Ok),
                 Err(e) => {
                     error!("Can't compute token: {}", e);
                     ApiResponse::new(
