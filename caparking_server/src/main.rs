@@ -2,10 +2,7 @@
 extern crate rocket;
 use std::env;
 
-use crate::routes::{
-    files,
-    residents::{get_resident, get_residents, put_resident},
-};
+use crate::routes::{files, login::login, residents::{get_resident, get_residents, put_resident}};
 
 pub mod routes;
 
@@ -18,5 +15,5 @@ fn rocket() -> _ {
 
     rocket::build()
         .mount("/", routes![files])
-        .mount("/api", routes![get_residents, get_resident, put_resident])
+        .mount("/api", routes![login, get_residents, get_resident, put_resident])
 }

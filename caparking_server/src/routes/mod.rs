@@ -9,6 +9,7 @@ use rocket::{
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
+pub mod login;
 pub mod residents;
 
 #[derive(Debug, Serialize, Deserialize)]
