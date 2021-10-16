@@ -11,14 +11,17 @@ use yew::{
 
 #[derive(Debug)]
 pub enum Msg {
-    PostLogin(LoginForm),
+    SendLogin,
     PostLoginResponse(Result<Token, anyhow::Error>),
+    UpdateLogin(String),
+    UpdatePassword(String),
 }
 
 #[derive(Debug)]
 pub(crate) struct LoginPageComponent {
     link: ComponentLink<Self>,
     fetch_task: Option<FetchTask>,
+    login_form: LoginForm,
 }
 
 impl Component for LoginPageComponent {
@@ -29,6 +32,7 @@ impl Component for LoginPageComponent {
         Self {
             link,
             fetch_task: None,
+            login_form: LoginForm::default(),
         }
     }
 
@@ -37,24 +41,34 @@ impl Component for LoginPageComponent {
     }
 
     fn view(&self) -> Html {
-        let send_login = self.link.callback(|_| {
-            info!("Click on login button !");
-            Msg::PostLogin(LoginForm {
-                login: "plop@plop".to_string(),
-                password: "718718718".to_string(),
-            })
-        });
-
         html! {
             <>
                 <h1>{"Login"}</h1>
                 <label for="uname">{"Login"}</label>
-                <input type="text" placeholder="login" name="uname" required=true />
+                <input
+                    type="text"
+                    placeholder="login"
+                    name="uname"
+                    required=true
+                    oninput=self.link.callback(|e: InputData| Msg::UpdateLogin(e.value))
+                />
                 <br/>
                 <label for="psw">{"Mot de passe"}</label>
-                <input type="password" placeholder="Mot de passe" name="psw" required=true />
+                <input
+                    type="password"
+                    placeholder="Mot de passe"
+                    name="psw"
+                    required=true
+                    oninput=self.link.callback(|e: InputData| Msg::UpdatePassword(e.value))
+                    onkeypress=self.link.batch_callback(|e: KeyboardEvent| {
+                        if e.key() == "Enter" { Some(Msg::SendLogin) } else { None }
+                    })
+                />
                 <br/>
-                <button type="submit" onclick={send_login}>{"Login"}</button>
+                <button
+                    type="submit"
+                    onclick=self.link.callback(|_| Msg::SendLogin)
+                >{"Login"}</button>
             </>
         }
     }
@@ -63,10 +77,10 @@ impl Component for LoginPageComponent {
         log::info!("Message received: {:?}", msg);
 
         match msg {
-            Msg::PostLogin(login_form) => {
+            Msg::SendLogin => {
                 // 1. build the request
                 let request = Request::post("/api/login")
-                    .body(Json(&login_form))
+                    .body(Json(&self.login_form))
                     .expect("Could not build request.");
                 // 2. construct a callback
                 let callback =
@@ -79,9 +93,6 @@ impl Component for LoginPageComponent {
                 let task = FetchService::fetch(request, callback).expect("failed to start request");
                 // 4. store the task so it isn't canceled immediately
                 self.fetch_task = Some(task);
-                // we want to redraw so that the page displays a 'fetching...' message to the user
-                // so return 'true'
-                true
             }
             Msg::PostLoginResponse(response) => {
                 match response {
@@ -93,8 +104,14 @@ impl Component for LoginPageComponent {
                     }
                 }
                 self.fetch_task = None;
-                true
             }
-        }
+            Msg::UpdateLogin(val) => {
+                self.login_form.login = val;
+            }
+            Msg::UpdatePassword(val) => {
+                self.login_form.password = val;
+            }
+        };
+        true
     }
 }

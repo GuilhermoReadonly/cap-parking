@@ -12,7 +12,7 @@ pub struct Token {
     pub token: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Default)]
 pub struct LoginForm {
     pub login: String,
     pub password: String,
