@@ -18,13 +18,13 @@ pub struct Claims {
     pub sub: ResidentSafe, // Optional. Subject (whom token refers to)
 }
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Debug, Serialize, Deserialize, Default, Clone)]
 pub struct LoginForm {
     pub login: String,
     pub password: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
 pub struct ResidentSafe {
     pub id: u128,
     pub name: String,
@@ -43,7 +43,7 @@ impl From<Resident> for ResidentSafe {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Default, Clone)]
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
 pub struct Resident {
     pub id: u128,
     pub name: String,

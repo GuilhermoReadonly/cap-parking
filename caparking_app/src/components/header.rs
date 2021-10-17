@@ -1,5 +1,5 @@
 use yew::prelude::*;
-use yew_router::components::RouterAnchor;
+use yew_router::components::Link;
 
 use crate::components::AppRoute;
 
@@ -10,31 +10,31 @@ impl Component for HeaderComponent {
     type Message = ();
     type Properties = ();
 
-    fn create(_props: Self::Properties, _link: ComponentLink<Self>) -> Self {
+    fn create(_ctx: &Context<Self>) -> Self {
         Self {}
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
+    fn changed(&mut self, _ctx: &Context<Self>) -> bool {
         false
     }
 
-    fn view(&self) -> Html {
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         html! {
             <div class="topnav">
-                <RouterAnchor<AppRoute> route=AppRoute::Home>
+                <Link<AppRoute> route={AppRoute::Home}>
                     {"Accueil"}
-                </RouterAnchor<AppRoute>>
-                <RouterAnchor<AppRoute> route=AppRoute::Residents>
+                </Link<AppRoute>>
+                <Link<AppRoute> route={AppRoute::Residents}>
                     {"Résidents"}
-                </RouterAnchor<AppRoute>>
-                <RouterAnchor<AppRoute> route=AppRoute::Login classes="login-elt">
+                </Link<AppRoute>>
+                <Link<AppRoute> route={AppRoute::Login} classes={classes!("login-elt")}>
                     {"Login"}
-                </RouterAnchor<AppRoute>>
+                </Link<AppRoute>>
             </div>
         }
     }
 
-    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
         false
     }
 }

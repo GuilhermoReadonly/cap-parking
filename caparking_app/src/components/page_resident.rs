@@ -1,14 +1,7 @@
 use caparking_lib::ResidentSafe as ResidentLib;
-use yew::{
-    format::{Json, Nothing},
-    prelude::*,
-    services::{
-        fetch::{FetchTask, Request, Response},
-        FetchService,
-    },
-};
+use yew::prelude::*;
 
-#[derive(Debug, Default, Clone, Properties)]
+#[derive(Debug, Default, PartialEq, Properties)]
 struct Resident {
     resident: ResidentLib,
 }
@@ -27,15 +20,10 @@ pub enum Msg {
 
 #[derive(Debug)]
 pub(super) struct ResidentComponent {
-    // `ComponentLink` is like a reference to a component.
-    // It can be used to send messages to the component
-    link: ComponentLink<Self>,
-    props: PageProperties,
     resident: Option<Resident>,
-    fetch_task: Option<FetchTask>,
 }
 
-#[derive(Debug, Clone, Properties)]
+#[derive(Debug, PartialEq, Properties)]
 pub(super) struct PageProperties {
     pub id: u128,
 }
@@ -44,25 +32,20 @@ impl Component for ResidentComponent {
     type Message = Msg;
     type Properties = PageProperties;
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        link.send_message(Msg::GetResident(props.id));
+    fn create(ctx: &Context<Self>) -> Self {
+        ctx.link().send_message(Msg::GetResident(ctx.props().id));
 
-        Self {
-            link,
-            props,
-            resident: None,
-            fetch_task: None,
-        }
+        Self { resident: None }
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
+    fn changed(&mut self, _ctx: &Context<Self>) -> bool {
         // Should only return "true" if new properties are different to
         // previously received properties.
         // This component has no properties so we will always return "false".
         false
     }
 
-    fn view(&self) -> Html {
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         html! {
             match &self.resident {
                 Some(r) => html! {
@@ -80,28 +63,28 @@ impl Component for ResidentComponent {
         }
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         log::info!("Message received: {:?}", msg);
 
         match msg {
             Msg::GetResident(id) => {
                 // 1. build the request
-                let request = Request::get(format!("/api/resident/{}", id))
-                    .body(Nothing)
-                    .expect("Could not build request.");
-                // 2. construct a callback
-                let callback = self.link.callback(
-                    |response: Response<Json<Result<ResidentLib, anyhow::Error>>>| {
-                        let Json(data) = response.into_body();
-                        Msg::GetResidentResponse(data)
-                    },
-                );
-                // 3. pass the request and callback to the fetch service
-                let task = FetchService::fetch(request, callback).expect("failed to start request");
-                // 4. store the task so it isn't canceled immediately
-                self.fetch_task = Some(task);
-                // we want to redraw so that the page displays a 'fetching...' message to the user
-                // so return 'true'
+                // let request = Request::get(format!("/api/resident/{}", id))
+                //     .body(Nothing)
+                //     .expect("Could not build request.");
+                // // 2. construct a callback
+                // let callback = self.link.callback(
+                //     |response: Response<Json<Result<ResidentLib, anyhow::Error>>>| {
+                //         let Json(data) = response.into_body();
+                //         Msg::GetResidentResponse(data)
+                //     },
+                // );
+                // // 3. pass the request and callback to the fetch service
+                // let task = FetchService::fetch(request, callback).expect("failed to start request");
+                // // 4. store the task so it isn't canceled immediately
+                // self.fetch_task = Some(task);
+                // // we want to redraw so that the page displays a 'fetching...' message to the user
+                // // so return 'true'
                 true
             }
             Msg::GetResidentResponse(response) => {
@@ -114,7 +97,6 @@ impl Component for ResidentComponent {
                         self.resident = None
                     }
                 }
-                self.fetch_task = None;
                 true
             }
         }

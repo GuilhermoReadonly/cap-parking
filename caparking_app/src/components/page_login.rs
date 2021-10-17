@@ -1,26 +1,23 @@
 use caparking_lib::{LoginForm, LoginResponse};
 use log::{error, info};
-use yew::{
-    format::Json,
-    prelude::*,
-    services::{
-        fetch::{FetchTask, Request, Response},
-        FetchService,
-    },
-};
+use std::{error::Error, fmt::Debug};
+
+use web_sys::{HtmlInputElement as InputElement, KeyboardEvent};
+use yew::{events::Event, html, Component, Context, Html, TargetCast};
+
+use crate::network::request;
 
 #[derive(Debug)]
 pub enum Msg {
     SendLogin,
-    PostLoginResponse(Result<LoginResponse, anyhow::Error>),
+    PostLoginResponse(Result<LoginResponse, Box<dyn Error>>),
+    PostLoginFetching,
     UpdateLogin(String),
     UpdatePassword(String),
 }
 
 #[derive(Debug)]
 pub(crate) struct LoginPageComponent {
-    link: ComponentLink<Self>,
-    fetch_task: Option<FetchTask>,
     login_form: LoginForm,
 }
 
@@ -28,19 +25,17 @@ impl Component for LoginPageComponent {
     type Message = Msg;
     type Properties = ();
 
-    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_ctx: &Context<Self>) -> Self {
         Self {
-            link,
-            fetch_task: None,
             login_form: LoginForm::default(),
         }
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
+    fn changed(&mut self, _ctx: &Context<Self>) -> bool {
         false
     }
 
-    fn view(&self) -> Html {
+    fn view(&self, ctx: &Context<Self>) -> Html {
         html! {
             <>
                 <h1>{"Login"}</h1>
@@ -50,7 +45,11 @@ impl Component for LoginPageComponent {
                     placeholder="login"
                     name="uname"
                     required=true
-                    oninput=self.link.callback(|e: InputData| Msg::UpdateLogin(e.value))
+                    onchange={ctx.link().callback(move |e: Event| {
+                        let input: InputElement = e.target_unchecked_into();
+                        let value = input.value();
+                        Msg::UpdateLogin(value)
+                    })}
                 />
                 <br/>
                 <label for="psw">{"Mot de passe"}</label>
@@ -59,58 +58,57 @@ impl Component for LoginPageComponent {
                     placeholder="Mot de passe"
                     name="psw"
                     required=true
-                    oninput=self.link.callback(|e: InputData| Msg::UpdatePassword(e.value))
-                    onkeypress=self.link.batch_callback(|e: KeyboardEvent| {
-                        if e.key() == "Enter" { Some(Msg::SendLogin) } else { None }
-                    })
+                    onchange={ctx.link().callback(move |e: Event| {
+                        let input: InputElement = e.target_unchecked_into();
+                        let value = input.value();
+                        Msg::UpdatePassword(value)
+                    })}
+                    onkeypress={ctx.link().batch_callback(|e: KeyboardEvent| {
+                        if e.key() == "Enter" {
+                            Some(Msg::SendLogin)
+                        } else {
+                            None
+                        }
+                    })}
                 />
                 <br/>
                 <button
                     type="submit"
-                    onclick=self.link.callback(|_| Msg::SendLogin)
+                    onclick={ctx.link().callback(|_| Msg::SendLogin)}
                 >{"Login"}</button>
             </>
         }
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         log::info!("Message received: {:?}", msg);
 
         match msg {
             Msg::SendLogin => {
-                // 1. build the request
-                let request = Request::post("/api/login")
-                    .body(Json(&self.login_form))
-                    .expect("Could not build request.");
-                // 2. construct a callback
-                let callback = self.link.callback(
-                    |response: Response<Json<Result<LoginResponse, anyhow::Error>>>| {
-                        let Json(data) = response.into_body();
-                        Msg::PostLoginResponse(data)
-                    },
-                );
-                // 3. pass the request and callback to the fetch service
-                let task = FetchService::fetch(request, callback).expect("failed to start request");
-                // 4. store the task so it isn't canceled immediately
-                self.fetch_task = Some(task);
+                let login_form = self.login_form.clone();
+                ctx.link().send_future(async {
+                    match request(Some(login_form), "POST").await {
+                        Ok(login_response) => Msg::PostLoginResponse(Ok(login_response)),
+                        Err(err) => Msg::PostLoginResponse(Err(Box::new(err))),
+                    }
+                });
+                ctx.link().send_message(Msg::PostLoginFetching);
             }
-            Msg::PostLoginResponse(response) => {
-                match response {
-                    Ok(s) => {
-                        info!("return: {:?}", s);
-                    }
-                    Err(e) => {
-                        error!("Something terrible happened...: {:?}", e);
-                    }
+            Msg::PostLoginResponse(response) => match response {
+                Ok(s) => {
+                    info!("return: {:?}", s);
                 }
-                self.fetch_task = None;
-            }
+                Err(e) => {
+                    error!("Something terrible happened...: {:?}", e);
+                }
+            },
             Msg::UpdateLogin(val) => {
                 self.login_form.login = val;
             }
             Msg::UpdatePassword(val) => {
                 self.login_form.password = val;
             }
+            _ => (),
         };
         true
     }

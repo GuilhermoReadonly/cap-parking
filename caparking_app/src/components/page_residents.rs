@@ -1,17 +1,10 @@
 use caparking_lib::ResidentSafe as ResidentLib;
-use yew::{
-    format::{Json, Nothing},
-    prelude::*,
-    services::{
-        fetch::{FetchTask, Request, Response},
-        FetchService,
-    },
-};
-use yew_router::components::RouterAnchor;
+use yew::prelude::*;
+use yew_router::components::Link;
 
 use crate::components::AppRoute;
 
-#[derive(Debug, Default, Clone, Properties)]
+#[derive(Debug, Default, PartialEq, Properties)]
 struct Resident {
     resident: ResidentLib,
 }
@@ -30,37 +23,29 @@ pub enum Msg {
 
 #[derive(Debug)]
 pub(super) struct ResidentsComponent {
-    // `ComponentLink` is like a reference to a component.
-    // It can be used to send messages to the component
-    link: ComponentLink<Self>,
     residents: Vec<Resident>,
-    fetch_task: Option<FetchTask>,
 }
 
 impl Component for ResidentsComponent {
     type Message = Msg;
     type Properties = ();
 
-    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(ctx: &Context<Self>) -> Self {
         let residents = Vec::default();
 
-        link.send_message(Msg::GetResidents);
+        ctx.link().send_message(Msg::GetResidents);
 
-        Self {
-            link,
-            residents,
-            fetch_task: None,
-        }
+        Self { residents }
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
+    fn changed(&mut self, _ctx: &Context<Self>) -> bool {
         // Should only return "true" if new properties are different to
         // previously received properties.
         // This component has no properties so we will always return "false".
         false
     }
 
-    fn view(&self) -> Html {
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         html! {
             <>
                 <table>
@@ -78,9 +63,9 @@ impl Component for ResidentsComponent {
                                     <tr>
                                         <td>{item.resident.id}</td>
                                         <td>
-                                            <RouterAnchor<AppRoute> route=AppRoute::Resident(item.resident.id)>
+                                            <Link<AppRoute> route={AppRoute::Resident{id:item.resident.id}}>
                                                 {&item.resident.name}
-                                            </RouterAnchor<AppRoute>>
+                                            </Link<AppRoute>>
                                         </td>
                                     </tr>
                                 }
@@ -97,29 +82,29 @@ impl Component for ResidentsComponent {
         }
     }
 
-    fn update(&mut self, msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         log::info!("Message received: {:?}", msg);
 
         match msg {
             Msg::GetResidents => {
-                // 1. build the request
-                let request = Request::get("/api/residents")
-                    .header("Authorization", "718718123456")
-                    .body(Nothing)
-                    .expect("Could not build request.");
-                // 2. construct a callback
-                let callback = self.link.callback(
-                    |response: Response<Json<Result<Vec<ResidentLib>, anyhow::Error>>>| {
-                        let Json(data) = response.into_body();
-                        Msg::GetResidentsResponse(data)
-                    },
-                );
-                // 3. pass the request and callback to the fetch service
-                let task = FetchService::fetch(request, callback).expect("failed to start request");
-                // 4. store the task so it isn't canceled immediately
-                self.fetch_task = Some(task);
-                // we want to redraw so that the page displays a 'fetching...' message to the user
-                // so return 'true'
+                // // 1. build the request
+                // let request = Request::get("/api/residents")
+                //     .header("Authorization", "718718123456")
+                //     .body(Nothing)
+                //     .expect("Could not build request.");
+                // // 2. construct a callback
+                // let callback = self.link.callback(
+                //     |response: Response<Json<Result<Vec<ResidentLib>, anyhow::Error>>>| {
+                //         let Json(data) = response.into_body();
+                //         Msg::GetResidentsResponse(data)
+                //     },
+                // );
+                // // 3. pass the request and callback to the fetch service
+                // let task = FetchService::fetch(request, callback).expect("failed to start request");
+                // // 4. store the task so it isn't canceled immediately
+                // self.fetch_task = Some(task);
+                // // we want to redraw so that the page displays a 'fetching...' message to the user
+                // // so return 'true'
                 true
             }
             Msg::GetResidentsResponse(response) => {
@@ -132,7 +117,6 @@ impl Component for ResidentsComponent {
                         self.residents = vec![]
                     }
                 }
-                self.fetch_task = None;
                 true
             }
         }

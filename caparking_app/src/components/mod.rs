@@ -3,7 +3,7 @@ use crate::components::{
     page_resident::ResidentComponent, page_residents::ResidentsComponent,
 };
 use yew::prelude::*;
-use yew_router::{router::Router, Switch};
+use yew_router::{router::Router, Routable};
 
 mod header;
 mod page_home;
@@ -11,59 +11,59 @@ mod page_login;
 mod page_resident;
 mod page_residents;
 
-#[derive(Switch, Debug, Clone)]
+#[derive(Routable, Debug, Clone, PartialEq)]
 pub enum AppRoute {
-    #[to = "/app/resident/{id}"]
-    Resident(u128),
-    #[to = "/app/residents"]
+    #[at("/app/resident/:id")]
+    Resident { id: u128 },
+    #[at("/app/residents")]
     Residents,
-    #[to = "/app/login"]
+    #[at("/app/login")]
     Login,
-    #[to = "/app"]
+    #[at("/app")]
     Home,
-    #[to = "/"]
+    #[at("/")]
     Index,
 }
 
 #[derive(Debug)]
-pub(crate) struct MainComponent {}
+pub(crate) struct MainComponent;
 
 impl Component for MainComponent {
     type Message = ();
     type Properties = ();
 
-    fn create(_props: Self::Properties, _link: ComponentLink<Self>) -> Self {
-        Self {}
+    fn create(_ctx: &Context<Self>) -> Self {
+        Self
     }
 
-    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
+    fn changed(&mut self, _ctx: &Context<Self>) -> bool {
         false
     }
 
-    fn view(&self) -> Html {
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         html! {
             <div class="grid-container">
                 <div class="header">
                     <HeaderComponent/>
                 </div>
                 <div class="content">
-                <Router<AppRoute, ()>
-                    render = Router::render(|switch: AppRoute| {
-                        match switch {
+                <Router<AppRoute>
+                    render={Router::render(|routes: &AppRoute| {
+                        match routes {
                             AppRoute::Index => html!{<HomePageComponent/>},
                             AppRoute::Home => html!{<HomePageComponent/>},
                             AppRoute::Residents => html!{<ResidentsComponent/>},
-                            AppRoute::Resident(id) => html!{<ResidentComponent id=id/>},
+                            AppRoute::Resident{id} => html!{<ResidentComponent id={id.clone()}/>},
                             AppRoute::Login => html!{<LoginPageComponent/>},
                         }
-                    })
+                    })}
                 />
                 </div>
             </div>
         }
     }
 
-    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
+    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
         false
     }
 }

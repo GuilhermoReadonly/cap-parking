@@ -9,11 +9,30 @@ name = "capark-app"
 path = "src/main.rs"
 
 [dependencies]
-yew = "0.18.0"
-yew-router = "0.15.0"
 caparking_lib = { path = "../caparking_lib" }
+
+wasm-bindgen = {version="0.2.78", features = ["serde-serialize"]}
+wasm-bindgen-futures = {version="0.4.28"}
+
 rand = "0.8.4"
 getrandom = { version = "0.2.3", features = ["js"] }
 anyhow = "1.0.44"
 log = "0.4.14"
 wasm-logger = "0.2.0"
+
+yew = { git = "https://github.com/yewstack/yew.git", rev = "3ebd866d136bac8f4715418b5063a1f49d98931c" }
+yew-router = { git = "https://github.com/yewstack/yew.git", rev = "3ebd866d136bac8f4715418b5063a1f49d98931c" }
+
+
+web-sys = {version = "0.3", features = [
+  "Headers",
+  "Request",
+  "RequestInit",
+  "RequestMode",
+  "Response",
+  "Window",
+]}
+
+serde = "1.0"
+serde_json = "1.0"
+
