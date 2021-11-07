@@ -87,7 +87,7 @@ impl Component for LoginPageComponent {
             Msg::SendLogin => {
                 let login_form = self.login_form.clone();
                 ctx.link().send_future(async {
-                    match request(Some(login_form), "POST").await {
+                    match request("POST", "/api/login", Some(login_form)).await {
                         Ok(login_response) => Msg::PostLoginResponse(Ok(login_response)),
                         Err(err) => Msg::PostLoginResponse(Err(Box::new(err))),
                     }

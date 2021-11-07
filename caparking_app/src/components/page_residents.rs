@@ -1,8 +1,10 @@
+use std::error::Error;
+
 use caparking_lib::ResidentSafe as ResidentLib;
 use yew::prelude::*;
 use yew_router::components::Link;
 
-use crate::components::AppRoute;
+use crate::{components::AppRoute, network::request};
 
 #[derive(Debug, Default, PartialEq, Properties)]
 struct Resident {
@@ -18,7 +20,7 @@ impl From<ResidentLib> for Resident {
 #[derive(Debug)]
 pub enum Msg {
     GetResidents,
-    GetResidentsResponse(Result<Vec<ResidentLib>, anyhow::Error>),
+    GetResidentsResponse(Result<Vec<ResidentLib>, Box<dyn Error>>),
 }
 
 #[derive(Debug)]
@@ -82,7 +84,7 @@ impl Component for ResidentsComponent {
         }
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         log::info!("Message received: {:?}", msg);
 
         match msg {
@@ -105,6 +107,12 @@ impl Component for ResidentsComponent {
                 // self.fetch_task = Some(task);
                 // // we want to redraw so that the page displays a 'fetching...' message to the user
                 // // so return 'true'
+                ctx.link().send_future(async move {
+                    match request::<(), _>("GET", "/api/residents", None).await {
+                        Ok(data) => Msg::GetResidentsResponse(Ok(data)),
+                        Err(err) => Msg::GetResidentsResponse(Err(Box::new(err))),
+                    }
+                });
                 true
             }
             Msg::GetResidentsResponse(response) => {

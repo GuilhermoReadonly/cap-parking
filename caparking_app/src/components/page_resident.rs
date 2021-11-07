@@ -1,5 +1,9 @@
+use std::error::Error;
+
 use caparking_lib::ResidentSafe as ResidentLib;
 use yew::prelude::*;
+
+use crate::network::request;
 
 #[derive(Debug, Default, PartialEq, Properties)]
 struct Resident {
@@ -15,7 +19,7 @@ impl From<ResidentLib> for Resident {
 #[derive(Debug)]
 pub enum Msg {
     GetResident(u128),
-    GetResidentResponse(Result<ResidentLib, anyhow::Error>),
+    GetResidentResponse(Result<ResidentLib, Box<dyn Error>>),
 }
 
 #[derive(Debug)]
@@ -63,28 +67,17 @@ impl Component for ResidentComponent {
         }
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         log::info!("Message received: {:?}", msg);
 
         match msg {
             Msg::GetResident(id) => {
-                // 1. build the request
-                // let request = Request::get(format!("/api/resident/{}", id))
-                //     .body(Nothing)
-                //     .expect("Could not build request.");
-                // // 2. construct a callback
-                // let callback = self.link.callback(
-                //     |response: Response<Json<Result<ResidentLib, anyhow::Error>>>| {
-                //         let Json(data) = response.into_body();
-                //         Msg::GetResidentResponse(data)
-                //     },
-                // );
-                // // 3. pass the request and callback to the fetch service
-                // let task = FetchService::fetch(request, callback).expect("failed to start request");
-                // // 4. store the task so it isn't canceled immediately
-                // self.fetch_task = Some(task);
-                // // we want to redraw so that the page displays a 'fetching...' message to the user
-                // // so return 'true'
+                ctx.link().send_future(async move {
+                    match request::<(), ResidentLib>("GET", &format!("/api/resident/{}", id), None).await {
+                        Ok(data) => Msg::GetResidentResponse(Ok(data)),
+                        Err(err) => Msg::GetResidentResponse(Err(Box::new(err))),
+                    }
+                });
                 true
             }
             Msg::GetResidentResponse(response) => {

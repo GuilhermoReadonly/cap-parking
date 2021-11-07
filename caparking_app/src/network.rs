@@ -31,8 +31,9 @@ impl From<JsValue> for FetchError {
 }
 
 pub async fn request<A: Serialize, B: for<'a> Deserialize<'a>>(
-    body: Option<A>,
     verb: &str,
+    url: &str,
+    body: Option<A>,
 ) -> Result<B, FetchError> {
     let mut opts = RequestInit::new();
 
@@ -40,11 +41,13 @@ pub async fn request<A: Serialize, B: for<'a> Deserialize<'a>>(
     let js_value = JsValue::from_str(&js_value.to_string());
 
     opts.method(&verb);
+    //opts.headers(&"{\"Authorization\": \"718718123456\"}".into());
     if body.is_some() {
         opts.body(Some(&js_value));
     }
 
-    let request = Request::new_with_str_and_init("/api/login", &opts)?;
+    let request = Request::new_with_str_and_init(url, &opts)?;
+    request.headers().set("Authorization", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MzYyNDgyMzYsInN1YiI6eyJpZCI6NywibmFtZSI6IkxvcyBSYWRvbmRpw7FvcyIsImxvZ2luIjoiNzE4IiwicGFya2luZ19zcG90cyI6WzFdfX0.r1lH6Y_t_qDaVYm0dJYTU_ykLYfru0XpfoyXjx61Xdc")?;
 
     let window = yew::utils::window();
     let resp_value = JsFuture::from(window.fetch_with_request(&request)).await?;
