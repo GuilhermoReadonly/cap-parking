@@ -3,9 +3,9 @@ use log::{error, info};
 use std::{error::Error, fmt::Debug};
 
 use web_sys::{HtmlInputElement as InputElement, KeyboardEvent};
-use yew::{events::Event, html, Component, Context, Html, TargetCast};
+use yew::{Callback, Component, Context, Html, TargetCast, events::Event, html, Properties};
 
-use crate::network::request;
+use crate::{network::request};
 
 #[derive(Debug)]
 pub enum Msg {
@@ -16,6 +16,11 @@ pub enum Msg {
     UpdatePassword(String),
 }
 
+#[derive(Debug, PartialEq, Properties)]
+pub struct PageProperties {
+    pub update_token_callback: Callback<String>,
+}
+
 #[derive(Debug)]
 pub(crate) struct LoginPageComponent {
     login_form: LoginForm,
@@ -23,7 +28,7 @@ pub(crate) struct LoginPageComponent {
 
 impl Component for LoginPageComponent {
     type Message = Msg;
-    type Properties = ();
+    type Properties = PageProperties;
 
     fn create(_ctx: &Context<Self>) -> Self {
         Self {
@@ -87,7 +92,7 @@ impl Component for LoginPageComponent {
             Msg::SendLogin => {
                 let login_form = self.login_form.clone();
                 ctx.link().send_future(async {
-                    match request("POST", "/api/login", Some(login_form)).await {
+                    match request("POST", "/api/login", Some(login_form), None).await {
                         Ok(login_response) => Msg::PostLoginResponse(Ok(login_response)),
                         Err(err) => Msg::PostLoginResponse(Err(Box::new(err))),
                     }
@@ -95,8 +100,9 @@ impl Component for LoginPageComponent {
                 ctx.link().send_message(Msg::PostLoginFetching);
             }
             Msg::PostLoginResponse(response) => match response {
-                Ok(s) => {
-                    info!("return: {:?}", s);
+                Ok(login_response) => {
+                    info!("Login response received: {:?}", login_response);
+                    ctx.props().update_token_callback.emit(login_response.token) //.send_message(GlobalMsg::NewToken(login_response.token));
                 }
                 Err(e) => {
                     error!("Something terrible happened...: {:?}", e);

@@ -30,6 +30,7 @@ pub(super) struct ResidentComponent {
 #[derive(Debug, PartialEq, Properties)]
 pub(super) struct PageProperties {
     pub id: u128,
+    pub token: Option<String>,
 }
 
 impl Component for ResidentComponent {
@@ -72,8 +73,16 @@ impl Component for ResidentComponent {
 
         match msg {
             Msg::GetResident(id) => {
+                let token = ctx.props().token.clone();
                 ctx.link().send_future(async move {
-                    match request::<(), ResidentLib>("GET", &format!("/api/resident/{}", id), None).await {
+                    match request::<(), ResidentLib>(
+                        "GET",
+                        &format!("/api/resident/{}", id),
+                        None,
+                        token,
+                    )
+                    .await
+                    {
                         Ok(data) => Msg::GetResidentResponse(Ok(data)),
                         Err(err) => Msg::GetResidentResponse(Err(Box::new(err))),
                     }

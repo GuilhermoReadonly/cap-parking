@@ -26,7 +26,7 @@ pub fn get_residents(_token: SecurityGuard) -> ApiResponse<Vec<ResidentSafe>> {
 }
 
 #[get("/resident/<id>")]
-pub fn get_resident(id: u128) -> ApiResponse<ResidentSafe> {
+pub fn get_resident(id: u128, _token: SecurityGuard) -> ApiResponse<ResidentSafe> {
     info!("Get resident {}...", id);
 
     match caparking_lib::get_resident(id) {

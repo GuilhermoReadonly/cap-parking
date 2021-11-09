@@ -26,21 +26,35 @@ pub enum AppRoute {
 }
 
 #[derive(Debug)]
-pub(crate) struct MainComponent;
+pub enum GlobalMsg {
+    NewToken(String),
+}
+
+#[derive(Debug)]
+pub(crate) struct MainComponent{
+    token: Option<String>
+}
 
 impl Component for MainComponent {
-    type Message = ();
+    type Message = GlobalMsg;
     type Properties = ();
 
     fn create(_ctx: &Context<Self>) -> Self {
-        Self
+        Self{token: None}
     }
 
     fn changed(&mut self, _ctx: &Context<Self>) -> bool {
         false
     }
 
-    fn view(&self, _ctx: &Context<Self>) -> Html {
+    fn view(&self, ctx: &Context<Self>) -> Html {
+        let token = self.token.clone();
+
+        let cb = ctx.link().callback(|token: String| {
+            log::info!("Callback activated: {:?}", token);
+            GlobalMsg::NewToken(token)
+        });
+
         html! {
             <div class="grid-container">
                 <div class="header">
@@ -48,13 +62,13 @@ impl Component for MainComponent {
                 </div>
                 <div class="content">
                 <Router<AppRoute>
-                    render={Router::render(|routes: &AppRoute| {
+                    render={Router::render(move |routes: &AppRoute| {
                         match routes {
                             AppRoute::Index => html!{<HomePageComponent/>},
                             AppRoute::Home => html!{<HomePageComponent/>},
-                            AppRoute::Residents => html!{<ResidentsComponent/>},
-                            AppRoute::Resident{id} => html!{<ResidentComponent id={id.clone()}/>},
-                            AppRoute::Login => html!{<LoginPageComponent/>},
+                            AppRoute::Residents => html!{<ResidentsComponent token={token.clone()} />},
+                            AppRoute::Resident{id} => html!{<ResidentComponent id={id.clone()} token={token.clone()}/>},
+                            AppRoute::Login => html!{<LoginPageComponent update_token_callback={cb.clone()}/>},
                         }
                     })}
                 />
@@ -63,7 +77,15 @@ impl Component for MainComponent {
         }
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
-        false
+    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+        log::info!("Message received: {:?}", msg);
+
+        match msg {
+            GlobalMsg::NewToken(t) => {
+                self.token = Some(t);
+                true
+            }
+
+        }
     }
 }

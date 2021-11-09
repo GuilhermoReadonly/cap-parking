@@ -4,7 +4,10 @@ use caparking_lib::ResidentSafe as ResidentLib;
 use yew::prelude::*;
 use yew_router::components::Link;
 
-use crate::{components::AppRoute, network::request};
+use crate::{
+    components::{AppRoute},
+    network::request,
+};
 
 #[derive(Debug, Default, PartialEq, Properties)]
 struct Resident {
@@ -23,6 +26,11 @@ pub enum Msg {
     GetResidentsResponse(Result<Vec<ResidentLib>, Box<dyn Error>>),
 }
 
+#[derive(Debug, PartialEq, Properties)]
+pub(super) struct PageProperties {
+    pub token: Option<String>,
+}
+
 #[derive(Debug)]
 pub(super) struct ResidentsComponent {
     residents: Vec<Resident>,
@@ -30,7 +38,7 @@ pub(super) struct ResidentsComponent {
 
 impl Component for ResidentsComponent {
     type Message = Msg;
-    type Properties = ();
+    type Properties = PageProperties;
 
     fn create(ctx: &Context<Self>) -> Self {
         let residents = Vec::default();
@@ -89,26 +97,10 @@ impl Component for ResidentsComponent {
 
         match msg {
             Msg::GetResidents => {
-                // // 1. build the request
-                // let request = Request::get("/api/residents")
-                //     .header("Authorization", "718718123456")
-                //     .body(Nothing)
-                //     .expect("Could not build request.");
-                // // 2. construct a callback
-                // let callback = self.link.callback(
-                //     |response: Response<Json<Result<Vec<ResidentLib>, anyhow::Error>>>| {
-                //         let Json(data) = response.into_body();
-                //         Msg::GetResidentsResponse(data)
-                //     },
-                // );
-                // // 3. pass the request and callback to the fetch service
-                // let task = FetchService::fetch(request, callback).expect("failed to start request");
-                // // 4. store the task so it isn't canceled immediately
-                // self.fetch_task = Some(task);
-                // // we want to redraw so that the page displays a 'fetching...' message to the user
-                // // so return 'true'
+                let token = ctx.props().token.clone();
+
                 ctx.link().send_future(async move {
-                    match request::<(), _>("GET", "/api/residents", None).await {
+                    match request::<(), _>("GET", "/api/residents", None, token).await {
                         Ok(data) => Msg::GetResidentsResponse(Ok(data)),
                         Err(err) => Msg::GetResidentsResponse(Err(Box::new(err))),
                     }
