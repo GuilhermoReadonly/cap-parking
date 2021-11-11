@@ -16,7 +16,7 @@ pub struct FetchError {
     err: Option<String>,
 }
 impl Display for FetchError {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         Debug::fmt(&self.err, f)
     }
 }

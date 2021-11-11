@@ -23,7 +23,7 @@ impl<'r> FromRequest<'r> for SecurityGuard {
     type Error = TokenError;
 
     async fn from_request(req: &'r Request<'_>) -> Outcome<Self, Self::Error> {
-        fn check_token_presence(raw_token: Option<&str>) -> Result<RawToken, TokenError> {
+        fn check_token_presence(raw_token: Option<&str>) -> Result<RawToken<'_>, TokenError> {
             match raw_token {
                 Some(t) => Ok(RawToken(t)),
                 None => Err(TokenError::Missing),
