@@ -38,7 +38,6 @@ impl<'r> FromRequest<'r> for SecurityGuard {
                     let secret = req
                         .guard::<&State<Secret>>()
                         .await
-                        .map(|s| s)
                         .expect("Secret not present !")
                         .0
                         .clone();

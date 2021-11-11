@@ -25,6 +25,8 @@ fn rocket() -> _ {
         .map(char::from)
         .collect();
 
+    dbg!(&secret);
+
     let secret = Secret(secret);
 
     let cwd = env::current_dir().expect("Can't get current directory.");
