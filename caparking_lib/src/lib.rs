@@ -43,13 +43,22 @@ impl From<Resident> for ResidentSafe {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq, Clone)]
 pub struct Resident {
     pub id: u128,
     pub name: String,
     pub login: String,
     pub password: String,
     pub parking_spots: Vec<u32>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq, Clone)]
+pub struct ResidentPartial {
+    pub id: u128,
+    pub name: Option<String>,
+    pub login: Option<String>,
+    pub password: Option<String>,
+    pub parking_spots: Option<Vec<u32>>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
@@ -101,6 +110,30 @@ pub fn insert_residents(mut residents: Vec<Resident>) -> Result<Vec<Resident>, B
     db.residents.append(&mut residents);
     write_db(&db)?;
     Ok(db.residents)
+}
+
+pub fn update_resident(resident_update: ResidentPartial) -> Result<Resident, Box<dyn Error>> {
+    info!("update_resident...");
+    let mut db: Db = open_db()?;
+    let option_found_resident = db.residents.iter_mut().find(|r| r.id == resident_update.id);
+    match option_found_resident {
+        Some(found_resident) => {
+            let updated_resident = Resident{
+                id: resident_update.id,
+                login: resident_update.login.unwrap_or(found_resident.login.clone()),
+                name: resident_update.name.unwrap_or(found_resident.name.clone()),
+                password: resident_update.password.unwrap_or(found_resident.password.clone()),
+                parking_spots: resident_update.parking_spots.unwrap_or(found_resident.parking_spots.clone()),
+            };
+            *found_resident = updated_resident.clone();
+            write_db(&db)?;
+            Ok(updated_resident)
+        },
+        None => {
+            Err(format!("Resident {} not found", resident_update.id).into())
+        }
+    }
+    
 }
 
 fn write_db(db: &Db) -> Result<(), Box<dyn Error>> {

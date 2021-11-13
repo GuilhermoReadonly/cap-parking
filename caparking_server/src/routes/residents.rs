@@ -1,4 +1,4 @@
-use caparking_lib::{Resident, ResidentSafe};
+use caparking_lib::{Resident, ResidentSafe, ResidentPartial};
 use rocket::{http::Status, serde::json::Json};
 
 use crate::{
@@ -45,14 +45,32 @@ pub fn get_resident(id: u128, _token: SecurityGuard) -> ApiResponse<ResidentSafe
     }
 }
 
-#[put("/resident", data = "<resident>")]
-pub fn put_resident(resident: Json<Resident>, _token: SecurityGuard) -> ApiResponse<Vec<Resident>> {
-    info!("Put residents...");
+#[post("/resident", data = "<resident>")]
+pub fn _post_resident(resident: Json<Resident>, _token: SecurityGuard) -> ApiResponse<Vec<Resident>> {
+    info!("Post residents...");
 
     let resident = resident.0;
 
     match caparking_lib::insert_residents(vec![resident]) {
         Ok(residents) => ApiResponse::new(Body::Ok(Json(residents)), Status::Ok),
+        Err(e) => {
+            error!("{}", e);
+            ApiResponse::new(
+                Body::Err(format!("{{\"error\": \"{}\"}}", e)),
+                Status::ImATeapot,
+            )
+        }
+    }
+}
+
+#[put("/resident", data = "<resident>")]
+pub fn put_resident(resident: Json<ResidentPartial>, _token: SecurityGuard) -> ApiResponse<Resident> {
+    info!("Put residents...");
+
+    let resident = resident.0;
+
+    match caparking_lib::update_resident(resident) {
+        Ok(resident) => ApiResponse::new(Body::Ok(Json(resident)), Status::Ok),
         Err(e) => {
             error!("{}", e);
             ApiResponse::new(
