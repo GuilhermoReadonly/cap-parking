@@ -31,8 +31,8 @@ pub enum GlobalMsg {
 }
 
 #[derive(Debug)]
-pub(crate) struct MainComponent{
-    token: Option<String>
+pub(crate) struct MainComponent {
+    token: Option<String>,
 }
 
 impl Component for MainComponent {
@@ -40,7 +40,7 @@ impl Component for MainComponent {
     type Properties = ();
 
     fn create(_ctx: &Context<Self>) -> Self {
-        Self{token: None}
+        Self { token: None }
     }
 
     fn changed(&mut self, _ctx: &Context<Self>) -> bool {
@@ -85,7 +85,6 @@ impl Component for MainComponent {
                 self.token = Some(t);
                 true
             }
-
         }
     }
 }

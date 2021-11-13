@@ -1,13 +1,11 @@
 use std::error::Error;
 
 use caparking_lib::ResidentSafe as ResidentLib;
+use log::warn;
 use yew::prelude::*;
 use yew_router::components::Link;
 
-use crate::{
-    components::{AppRoute},
-    network::request,
-};
+use crate::{components::AppRoute, network::request};
 
 #[derive(Debug, Default, PartialEq, Properties)]
 struct Resident {
@@ -43,15 +41,17 @@ impl Component for ResidentsComponent {
     fn create(ctx: &Context<Self>) -> Self {
         let residents = Vec::default();
 
-        ctx.link().send_message(Msg::GetResidents);
+        if ctx.props().token.is_some() {
+            ctx.link().send_message(Msg::GetResidents);
+        } else {
+            warn!("Not authenticated, go to login page...");
+            yew_router::push_route(AppRoute::Login);
+        }
 
         Self { residents }
     }
 
     fn changed(&mut self, _ctx: &Context<Self>) -> bool {
-        // Should only return "true" if new properties are different to
-        // previously received properties.
-        // This component has no properties so we will always return "false".
         false
     }
 
@@ -114,7 +114,9 @@ impl Component for ResidentsComponent {
                     }
                     Err(e) => {
                         log::error!("Something terrible happened...: {:?}", e);
-                        self.residents = vec![]
+                        self.residents = vec![];
+
+                        yew_router::push_route(AppRoute::Login);
                     }
                 }
                 true

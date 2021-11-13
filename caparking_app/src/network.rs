@@ -38,12 +38,11 @@ pub async fn request<A: Serialize, B: for<'a> Deserialize<'a>>(
 ) -> Result<B, FetchError> {
     let mut opts = RequestInit::new();
 
-    let js_value = serde_json::json!(body);
-    let js_value = JsValue::from_str(&js_value.to_string());
-
     opts.method(&verb);
-    //opts.headers(&"{\"Authorization\": \"718718123456\"}".into());
-    if body.is_some() {
+
+    if let Some(body) = body {
+        let js_string = serde_json::to_string(&body).unwrap();
+        let js_value = JsValue::from_serde(&js_string).unwrap();
         opts.body(Some(&js_value));
     }
 

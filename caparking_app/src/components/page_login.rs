@@ -3,9 +3,9 @@ use log::{error, info};
 use std::{error::Error, fmt::Debug};
 
 use web_sys::{HtmlInputElement as InputElement, KeyboardEvent};
-use yew::{Callback, Component, Context, Html, TargetCast, events::Event, html, Properties};
+use yew::{events::Event, html, Callback, Component, Context, Html, Properties, TargetCast};
 
-use crate::{network::request};
+use crate::{components::AppRoute, network::request};
 
 #[derive(Debug)]
 pub enum Msg {
@@ -78,7 +78,6 @@ impl Component for LoginPageComponent {
                 />
                 <br/>
                 <button
-                    type="submit"
                     onclick={ctx.link().callback(|_| Msg::SendLogin)}
                 >{"Login"}</button>
             </>
@@ -102,7 +101,9 @@ impl Component for LoginPageComponent {
             Msg::PostLoginResponse(response) => match response {
                 Ok(login_response) => {
                     info!("Login response received: {:?}", login_response);
-                    ctx.props().update_token_callback.emit(login_response.token) //.send_message(GlobalMsg::NewToken(login_response.token));
+                    ctx.props().update_token_callback.emit(login_response.token);
+
+                    yew_router::push_route(AppRoute::Home);
                 }
                 Err(e) => {
                     error!("Something terrible happened...: {:?}", e);
