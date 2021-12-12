@@ -69,20 +69,31 @@ pub fn _post_resident(
 #[put("/resident", data = "<resident>")]
 pub fn put_resident(
     resident: Json<ResidentPartial>,
-    _token: SecurityGuard,
+    token: SecurityGuard,
 ) -> ApiResponse<Resident> {
     info!("Put residents...");
 
     let resident = resident.0;
 
-    match caparking_lib::update_resident(resident) {
-        Ok(resident) => ApiResponse::new(Body::Ok(Json(resident)), Status::Ok),
-        Err(e) => {
-            error!("{}", e);
-            ApiResponse::new(
-                Body::Err(format!("{{\"error\": \"{}\"}}", e)),
-                Status::ImATeapot,
-            )
+    if resident.id == token.decoded_token.sub.id {
+        match caparking_lib::update_resident(resident) {
+            Ok(resident) => ApiResponse::new(Body::Ok(Json(resident)), Status::Ok),
+            Err(e) => {
+                error!("{}", e);
+                ApiResponse::new(
+                    Body::Err(format!("{{\"error\": \"{}\"}}", e)),
+                    Status::ImATeapot,
+                )
+            }
         }
+    } else {
+        let e = format!("User {} can't modify other user {}", token.decoded_token.sub.id, resident.id );
+        error!("{}", e);
+        ApiResponse::new(
+            Body::Err(format!("{{\"error\": \"{}\"}}", e)),
+            Status::Forbidden,
+        )
     }
+
+
 }
