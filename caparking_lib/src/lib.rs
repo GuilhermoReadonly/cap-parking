@@ -24,7 +24,7 @@ pub struct LoginForm {
     pub password: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq, Clone)]
 pub struct ResidentSafe {
     pub id: u128,
     pub name: String,
@@ -118,22 +118,25 @@ pub fn update_resident(resident_update: ResidentPartial) -> Result<Resident, Box
     let option_found_resident = db.residents.iter_mut().find(|r| r.id == resident_update.id);
     match option_found_resident {
         Some(found_resident) => {
-            let updated_resident = Resident{
+            let updated_resident = Resident {
                 id: resident_update.id,
-                login: resident_update.login.unwrap_or(found_resident.login.clone()),
+                login: resident_update
+                    .login
+                    .unwrap_or(found_resident.login.clone()),
                 name: resident_update.name.unwrap_or(found_resident.name.clone()),
-                password: resident_update.password.unwrap_or(found_resident.password.clone()),
-                parking_spots: resident_update.parking_spots.unwrap_or(found_resident.parking_spots.clone()),
+                password: resident_update
+                    .password
+                    .unwrap_or(found_resident.password.clone()),
+                parking_spots: resident_update
+                    .parking_spots
+                    .unwrap_or(found_resident.parking_spots.clone()),
             };
             *found_resident = updated_resident.clone();
             write_db(&db)?;
             Ok(updated_resident)
-        },
-        None => {
-            Err(format!("Resident {} not found", resident_update.id).into())
         }
+        None => Err(format!("Resident {} not found", resident_update.id).into()),
     }
-    
 }
 
 fn write_db(db: &Db) -> Result<(), Box<dyn Error>> {

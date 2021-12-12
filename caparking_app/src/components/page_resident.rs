@@ -2,6 +2,7 @@ use std::error::Error;
 
 use caparking_lib::ResidentSafe as ResidentLib;
 use log::warn;
+use web_sys::HtmlInputElement as InputElement;
 use yew::prelude::*;
 
 use crate::{components::AppRoute, network::request};
@@ -25,6 +26,8 @@ pub enum Msg {
     CancelEdit,
     PutResident(ResidentLib),
     PutResidentResponse(Result<ResidentLib, Box<dyn Error>>),
+    UpdateName(String),
+    UpdateLogin(String),
 }
 
 #[derive(Debug)]
@@ -65,35 +68,52 @@ impl Component for ResidentComponent {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        match &self.resident {
-            Some(r) => html! {
+        match (&self.resident, &self.edit) {
+            (Some(r), false) => html! {
                 <>
                 <h2>{&r.resident.name}</h2>
-                <p>{format!("Id: {}", &r.resident.id)}</p>
                 <p>{format!("Login: {}", &r.resident.login)}</p>
                 <p>{format!("Parking: {:?}", &r.resident.parking_spots)}</p>
-                {if self.edit {
-                    html! {
-                        <>
-                        <button
-                            onclick={ctx.link().callback(|_| Msg::CancelEdit)}
-                        >{"Annuler"} </button>
-                        <button
-                            onclick={ctx.link().callback(|_| Msg::PutResident(ResidentLib::default()))}
-                        >{"Sauvegarder"} </button>
-                        </>
-                    }
-                } else {
-                    html! {
-                        <button
-                        onclick={ctx.link().callback(|_| Msg::Edit)}> {"Modifier"} </button>
-
-                    }
-                }}
+                <button onclick={ctx.link().callback(|_| Msg::Edit)}> {"Modifier"} </button>
                 </>
 
             },
+            (Some(r), true) => {
+                let resident = r.resident.clone();
+                html! {
+                    <>
+                    <h2>{&r.resident.name}</h2>
+                    <p>{"Name: "} <input
+                        type="text"
+                        value={r.resident.name.clone()}
+                        required=true
+                        onchange={ctx.link().callback(move |e: Event| {
+                            let input: InputElement = e.target_unchecked_into();
+                            let value = input.value();
+                            Msg::UpdateName(value)
+                        })}
+                    /></p>
+                    <p>{"Login: "} <input
+                        type="text"
+                        value={r.resident.login.clone()}
+                        required=true
+                        onchange={ctx.link().callback(move |e: Event| {
+                            let input: InputElement = e.target_unchecked_into();
+                            let value = input.value();
+                            Msg::UpdateLogin(value)
+                        })}
+                    /></p>
+                    <p>{format!("Parking: {:?}", &r.resident.parking_spots)}</p>
+                    <button onclick={ctx.link().callback(|_| Msg::CancelEdit)}>{"Annuler"} </button>
+                    <button onclick={ctx.link().callback(move|_| {
+                        Msg::PutResident(resident.clone())
+                    })}>{"Sauvegarder"}</button>
+                    </>
+
+                }
+            }
             _ => html! {
+
                 <p>{"Something, somewhere, went terribly wrong..."}</p>
             },
         }
@@ -170,6 +190,18 @@ impl Component for ResidentComponent {
 
                         yew_router::push_route(AppRoute::Login);
                     }
+                }
+                true
+            }
+            Msg::UpdateName(val) => {
+                if let Some(r) = &mut self.resident {
+                    r.resident.name = val;
+                }
+                true
+            }
+            Msg::UpdateLogin(val) => {
+                if let Some(r) = &mut self.resident {
+                    r.resident.login = val;
                 }
                 true
             }
