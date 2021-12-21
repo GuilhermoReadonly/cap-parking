@@ -3,7 +3,7 @@ use std::error::Error;
 use caparking_lib::ResidentSafe as ResidentLib;
 use log::warn;
 use yew::prelude::*;
-use yew_router::components::Link;
+use yew_router::{components::Link, history::History, hooks::use_history};
 
 use crate::{components::AppRoute, network::request};
 
@@ -45,7 +45,7 @@ impl Component for ResidentsComponent {
             ctx.link().send_message(Msg::GetResidents);
         } else {
             warn!("Not authenticated, go to login page...");
-            yew_router::push_route(AppRoute::Login);
+            use_history().unwrap().push(AppRoute::Login);
         }
 
         Self { residents }
@@ -73,7 +73,7 @@ impl Component for ResidentsComponent {
                                     <tr>
                                         <td>{item.resident.id}</td>
                                         <td>
-                                            <Link<AppRoute> route={AppRoute::Resident{id:item.resident.id}}>
+                                            <Link<AppRoute> to={AppRoute::Resident{id:item.resident.id}}>
                                                 {&item.resident.name}
                                             </Link<AppRoute>>
                                         </td>
@@ -116,7 +116,7 @@ impl Component for ResidentsComponent {
                         log::error!("Something terrible happened...: {:?}", e);
                         self.residents = vec![];
 
-                        yew_router::push_route(AppRoute::Login);
+                        use_history().unwrap().push(AppRoute::Login);
                     }
                 }
                 true

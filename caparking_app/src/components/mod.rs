@@ -2,8 +2,9 @@ use crate::components::{
     header::HeaderComponent, page_home::HomePageComponent, page_login::LoginPageComponent,
     page_resident::ResidentComponent, page_residents::ResidentsComponent,
 };
+use log::info;
 use yew::prelude::*;
-use yew_router::{router::Router, Routable};
+use yew_router::{BrowserRouter, Routable, Switch};
 
 mod header;
 mod page_home;
@@ -61,8 +62,9 @@ impl Component for MainComponent {
                     <HeaderComponent/>
                 </div>
                 <div class="content">
-                <Router<AppRoute>
-                    render={Router::render(move |routes: &AppRoute| {
+                <BrowserRouter>
+                    <Switch<AppRoute> render={Switch::render(move |routes: &AppRoute| {
+                        info!("Route: {:?}", routes);
                         match routes {
                             AppRoute::Index => html!{<HomePageComponent/>},
                             AppRoute::Home => html!{<HomePageComponent/>},
@@ -70,8 +72,8 @@ impl Component for MainComponent {
                             AppRoute::Resident{id} => html!{<ResidentComponent id={id.clone()} token={token.clone()}/>},
                             AppRoute::Login => html!{<LoginPageComponent update_token_callback={cb.clone()}/>},
                         }
-                    })}
-                />
+                    })} />
+                </BrowserRouter>
                 </div>
             </div>
         }

@@ -87,13 +87,14 @@ pub fn put_resident(
             }
         }
     } else {
-        let e = format!("User {} can't modify other user {}", token.decoded_token.sub.id, resident.id );
+        let e = format!(
+            "User {} can't modify other user {}",
+            token.decoded_token.sub.id, resident.id
+        );
         error!("{}", e);
         ApiResponse::new(
             Body::Err(format!("{{\"error\": \"{}\"}}", e)),
             Status::Forbidden,
         )
     }
-
-
 }

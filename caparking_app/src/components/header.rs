@@ -1,5 +1,5 @@
 use yew::prelude::*;
-use yew_router::components::Link;
+use yew_router::prelude::*;
 
 use crate::components::AppRoute;
 
@@ -21,15 +21,9 @@ impl Component for HeaderComponent {
     fn view(&self, _ctx: &Context<Self>) -> Html {
         html! {
             <div class="topnav">
-                <Link<AppRoute> route={AppRoute::Home}>
-                    {"Accueil"}
-                </Link<AppRoute>>
-                <Link<AppRoute> route={AppRoute::Residents}>
-                    {"Résidents"}
-                </Link<AppRoute>>
-                <Link<AppRoute> route={AppRoute::Login} classes={classes!("login-elt")}>
-                    {"Login"}
-                </Link<AppRoute>>
+                <Link<AppRoute> to={AppRoute::Home}>{"Accueil"}</Link<AppRoute>>
+                <Link<AppRoute> to={AppRoute::Residents}>{"Résidents"}</Link<AppRoute>>
+                <Link<AppRoute> to={AppRoute::Login} classes={classes!("login-elt")}>{"Login"}</Link<AppRoute>>
             </div>
         }
     }

@@ -51,7 +51,7 @@ pub async fn request<A: Serialize, B: for<'a> Deserialize<'a>>(
         request.headers().set("Authorization", &t)?;
     }
 
-    let window = yew::utils::window();
+    let window = web_sys::window().expect("no window available");
     let resp_value = JsFuture::from(window.fetch_with_request(&request)).await?;
     let resp: Response = resp_value.dyn_into()?;
 

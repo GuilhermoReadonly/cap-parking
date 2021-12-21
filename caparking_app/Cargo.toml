@@ -19,8 +19,8 @@ getrandom = { version = "0.2.3", features = ["js"] }
 log = "0.4.14"
 wasm-logger = "0.2.0"
 
-yew = { git = "https://github.com/yewstack/yew.git", rev = "3ebd866d136bac8f4715418b5063a1f49d98931c" }
-yew-router = { git = "https://github.com/yewstack/yew.git", rev = "3ebd866d136bac8f4715418b5063a1f49d98931c" }
+yew = "0.19.3"
+yew-router = "0.16.0"
 
 
 web-sys = {version = "0.3", features = [

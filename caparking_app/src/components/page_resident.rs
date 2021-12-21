@@ -4,6 +4,7 @@ use caparking_lib::ResidentSafe as ResidentLib;
 use log::warn;
 use web_sys::HtmlInputElement as InputElement;
 use yew::prelude::*;
+use yew_router::{history::History, hooks::use_history};
 
 use crate::{components::AppRoute, network::request};
 
@@ -51,7 +52,7 @@ impl Component for ResidentComponent {
             ctx.link().send_message(Msg::GetResident(ctx.props().id));
         } else {
             warn!("Not authenticated, go to login page...");
-            yew_router::push_route(AppRoute::Login);
+            use_history().unwrap().push(AppRoute::Login);
         }
 
         Self {
@@ -149,7 +150,7 @@ impl Component for ResidentComponent {
                         log::error!("Something terrible happened...: {:?}", e);
                         self.resident = None;
 
-                        yew_router::push_route(AppRoute::Login);
+                        use_history().unwrap().push(AppRoute::Login);
                     }
                 }
                 true
@@ -188,7 +189,7 @@ impl Component for ResidentComponent {
                         log::error!("Something terrible happened...: {:?}", e);
                         self.resident = None;
 
-                        yew_router::push_route(AppRoute::Login);
+                        use_history().unwrap().push(AppRoute::Login);
                     }
                 }
                 true
