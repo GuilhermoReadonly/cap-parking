@@ -105,7 +105,9 @@ impl Component for LoginPageComponent {
                     info!("Login response received: {:?}", login_response);
                     ctx.props().update_token_callback.emit(login_response.token);
 
-                    use_history().unwrap().push(AppRoute::Home);
+                    use_history()
+                        .expect("history should be available")
+                        .push(AppRoute::Home);
                 }
                 Err(e) => {
                     error!("Something terrible happened...: {:?}", e);

@@ -4,7 +4,7 @@ use yew_router::prelude::*;
 use crate::components::AppRoute;
 
 #[derive(Debug)]
-pub struct HeaderComponent {}
+pub struct HeaderComponent;
 
 impl Component for HeaderComponent {
     type Message = ();

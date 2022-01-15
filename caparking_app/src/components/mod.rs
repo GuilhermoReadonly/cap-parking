@@ -4,7 +4,7 @@ use crate::components::{
 };
 use log::info;
 use yew::prelude::*;
-use yew_router::{BrowserRouter, Routable, Switch};
+use yew_router::prelude::*;
 
 mod header;
 mod page_home;
@@ -65,7 +65,7 @@ impl Component for MainComponent {
                 <BrowserRouter>
                     <Switch<AppRoute> render={Switch::render(move |routes: &AppRoute| {
                         info!("Route: {:?}", routes);
-                        match routes {
+                        match routes.clone() {
                             AppRoute::Index => html!{<HomePageComponent/>},
                             AppRoute::Home => html!{<HomePageComponent/>},
                             AppRoute::Residents => html!{<ResidentsComponent token={token.clone()} />},
