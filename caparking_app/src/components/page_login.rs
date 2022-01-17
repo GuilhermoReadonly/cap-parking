@@ -1,7 +1,7 @@
 use caparking_lib::{LoginForm, LoginResponse};
 use log::{error, info};
 use std::{error::Error, fmt::Debug};
-use yew_router::{history::History, hooks::use_history};
+use yew_router::{history::History, prelude::RouterScopeExt};
 
 use web_sys::{HtmlInputElement as InputElement, KeyboardEvent};
 use yew::{events::Event, html, Callback, Component, Context, Html, Properties, TargetCast};
@@ -103,12 +103,10 @@ impl Component for LoginPageComponent {
                 Ok(login_response) => {
                     info!("Login response received: {login_response:?}");
                     ctx.props().update_token_callback.emit(login_response.token);
-                    info!("#######1");
-                    let hist = use_history();
-                    info!("#######2");
-                    let hist2 = hist.expect("history should be available");
-                    info!("#######3");
-                    hist2.push(AppRoute::Home);
+                    ctx.link()
+                        .history()
+                        .expect("history should be available")
+                        .push(AppRoute::Home);
                 }
                 Err(e) => {
                     error!("Something terrible happened...: {:?}", e);

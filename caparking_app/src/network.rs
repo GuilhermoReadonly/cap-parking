@@ -64,6 +64,7 @@ pub async fn request<A: Serialize, B: for<'a> Deserialize<'a>>(
         error!("Fetch error: {e}");
         FetchError {
             err: Some(format!("Can't parse response: {:?}", e)),
-    }})?;
+        }
+    })?;
     Ok(data)
 }
