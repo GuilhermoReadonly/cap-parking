@@ -4,6 +4,8 @@ use std::fmt::Debug;
 use std::fmt::Display;
 use std::fmt::Formatter;
 
+use log::error;
+use log::info;
 use serde::{Deserialize, Serialize};
 
 use wasm_bindgen::JsCast;
@@ -38,6 +40,8 @@ pub async fn request<A: Serialize, B: for<'a> Deserialize<'a>>(
 ) -> Result<B, FetchError> {
     let mut opts = RequestInit::new();
 
+    info!("Request {verb} {url}");
+
     opts.method(&verb);
 
     if let Some(body) = body {
@@ -56,8 +60,10 @@ pub async fn request<A: Serialize, B: for<'a> Deserialize<'a>>(
     let resp: Response = resp_value.dyn_into()?;
 
     let js_value = JsFuture::from(resp.json()?).await?;
-    let data = js_value.into_serde().map_err(|e| FetchError {
-        err: Some(format!("Can't parse response: {:?}", e)),
-    })?;
+    let data = js_value.into_serde().map_err(|e| {
+        error!("Fetch error: {e}");
+        FetchError {
+            err: Some(format!("Can't parse response: {:?}", e)),
+    }})?;
     Ok(data)
 }

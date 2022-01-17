@@ -42,7 +42,6 @@ impl Component for LoginPageComponent {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        info!("############");
         html! {
             <>
                 <h1>{"Login"}</h1>
@@ -102,12 +101,14 @@ impl Component for LoginPageComponent {
             }
             Msg::PostLoginResponse(response) => match response {
                 Ok(login_response) => {
-                    info!("Login response received: {:?}", login_response);
+                    info!("Login response received: {login_response:?}");
                     ctx.props().update_token_callback.emit(login_response.token);
-
-                    use_history()
-                        .expect("history should be available")
-                        .push(AppRoute::Home);
+                    info!("#######1");
+                    let hist = use_history();
+                    info!("#######2");
+                    let hist2 = hist.expect("history should be available");
+                    info!("#######3");
+                    hist2.push(AppRoute::Home);
                 }
                 Err(e) => {
                     error!("Something terrible happened...: {:?}", e);

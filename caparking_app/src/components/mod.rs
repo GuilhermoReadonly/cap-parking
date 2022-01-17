@@ -58,23 +58,23 @@ impl Component for MainComponent {
 
         html! {
             <div class="grid-container">
-                <div class="header">
-                    <HeaderComponent/>
-                </div>
-                <div class="content">
                 <BrowserRouter>
-                    <Switch<AppRoute> render={Switch::render(move |routes: &AppRoute| {
-                        info!("Route: {:?}", routes);
-                        match routes.clone() {
-                            AppRoute::Index => html!{<HomePageComponent/>},
-                            AppRoute::Home => html!{<HomePageComponent/>},
-                            AppRoute::Residents => html!{<ResidentsComponent token={token.clone()} />},
-                            AppRoute::Resident{id} => html!{<ResidentComponent id={id.clone()} token={token.clone()}/>},
-                            AppRoute::Login => html!{<LoginPageComponent update_token_callback={cb.clone()}/>},
-                        }
-                    })} />
+                    <div class="header">
+                        <HeaderComponent/>
+                    </div>
+                    <div class="content">
+                        <Switch<AppRoute> render={Switch::render(move |routes: &AppRoute| {
+                            info!("Route: {:?}", routes);
+                            match routes.clone() {
+                                AppRoute::Index => html!{<HomePageComponent/>},
+                                AppRoute::Home => html!{<HomePageComponent/>},
+                                AppRoute::Residents => html!{<ResidentsComponent token={token.clone()} />},
+                                AppRoute::Resident{id} => html!{<ResidentComponent id={id.clone()} token={token.clone()}/>},
+                                AppRoute::Login => html!{<LoginPageComponent update_token_callback={cb.clone()}/>},
+                            }
+                        })} />
+                    </div>
                 </BrowserRouter>
-                </div>
             </div>
         }
     }
