@@ -74,7 +74,7 @@ impl Component for MainComponent {
             <div class="grid-container">
                 <BrowserRouter>
                     <div class="header">
-                        <HeaderComponent/>
+                        <HeaderComponent token={token.clone()}/>
                     </div>
                     <div class="content">
                         <Switch<AppRoute> render={Switch::render(move |routes: &AppRoute| {
