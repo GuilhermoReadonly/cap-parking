@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use caparking_lib::ResidentSafe as ResidentLib;
+use caparking_lib::{DecodedToken, ResidentSafe as ResidentLib};
 use log::warn;
 use web_sys::HtmlInputElement as InputElement;
 use yew::prelude::*;
@@ -40,7 +40,7 @@ pub(super) struct ResidentComponent {
 #[derive(Debug, PartialEq, Properties)]
 pub(super) struct PageProperties {
     pub id: u128,
-    pub token: Option<String>,
+    pub token: Option<DecodedToken>,
 }
 
 impl Component for ResidentComponent {

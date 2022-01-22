@@ -12,7 +12,13 @@ pub struct LoginResponse {
     pub token: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub struct DecodedToken {
+    pub raw_token: String,
+    pub claims: Claims,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct Claims {
     pub exp: usize, // Required (validate_exp defaults to true in validation). Expiration time (as UTC timestamp)
     pub sub: ResidentSafe, // Optional. Subject (whom token refers to)

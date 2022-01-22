@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use caparking_lib::ResidentSafe as ResidentLib;
+use caparking_lib::{DecodedToken, ResidentSafe as ResidentLib};
 use log::warn;
 use yew::prelude::*;
 use yew_router::{components::Link, history::History, prelude::RouterScopeExt};
@@ -26,7 +26,7 @@ pub enum Msg {
 
 #[derive(Debug, PartialEq, Properties)]
 pub(super) struct PageProperties {
-    pub token: Option<String>,
+    pub token: Option<DecodedToken>,
 }
 
 #[derive(Debug)]

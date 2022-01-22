@@ -2,6 +2,8 @@ use crate::components::{
     header::HeaderComponent, page_home::HomePageComponent, page_login::LoginPageComponent,
     page_resident::ResidentComponent, page_residents::ResidentsComponent,
 };
+use caparking_lib::{Claims, DecodedToken};
+use jsonwebtoken::dangerous_insecure_decode;
 use log::info;
 use yew::prelude::*;
 use yew_router::prelude::*;
@@ -28,12 +30,12 @@ pub enum AppRoute {
 
 #[derive(Debug)]
 pub enum GlobalMsg {
-    NewToken(String),
+    NewToken(DecodedToken),
 }
 
 #[derive(Debug)]
 pub(crate) struct MainComponent {
-    token: Option<String>,
+    token: Option<DecodedToken>,
 }
 
 impl Component for MainComponent {
@@ -53,7 +55,19 @@ impl Component for MainComponent {
 
         let cb = ctx.link().callback(|token: String| {
             log::info!("Callback activated: {:?}", token);
-            GlobalMsg::NewToken(token)
+
+            let claims = dangerous_insecure_decode::<Claims>(
+                &token,
+                //&Validation::default(),
+            )
+            .expect("Token decoding failed")
+            .claims;
+            let decoded_token = DecodedToken {
+                raw_token: token,
+                claims,
+            };
+            info!("Jwt decoded: {decoded_token:?}");
+            GlobalMsg::NewToken(decoded_token)
         });
 
         html! {

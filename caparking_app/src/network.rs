@@ -4,6 +4,7 @@ use std::fmt::Debug;
 use std::fmt::Display;
 use std::fmt::Formatter;
 
+use caparking_lib::DecodedToken;
 use log::error;
 use log::info;
 use serde::{Deserialize, Serialize};
@@ -36,7 +37,7 @@ pub async fn request<A: Serialize, B: for<'a> Deserialize<'a>>(
     verb: &str,
     url: &str,
     body: Option<A>,
-    token: Option<String>,
+    token: Option<DecodedToken>,
 ) -> Result<B, FetchError> {
     let mut opts = RequestInit::new();
 
@@ -52,7 +53,7 @@ pub async fn request<A: Serialize, B: for<'a> Deserialize<'a>>(
 
     let request = Request::new_with_str_and_init(url, &opts)?;
     if let Some(t) = token {
-        request.headers().set("Authorization", &t)?;
+        request.headers().set("Authorization", &t.raw_token)?;
     }
 
     let window = web_sys::window().expect("no window available");
