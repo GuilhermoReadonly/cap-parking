@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use caparking_lib::{DecodedToken, ResidentSafe as ResidentLib};
-use log::warn;
+use log::{warn, debug};
 use web_sys::HtmlInputElement as InputElement;
 use yew::prelude::*;
 use yew_router::{history::History, prelude::RouterScopeExt};
@@ -43,11 +43,8 @@ pub(super) struct PageProperties {
     pub token: Option<DecodedToken>,
 }
 
-impl Component for ResidentComponent {
-    type Message = Msg;
-    type Properties = PageProperties;
-
-    fn create(ctx: &Context<Self>) -> Self {
+impl ResidentComponent{
+    fn get_resident(ctx: &Context<Self>){
         if ctx.props().token.is_some() {
             ctx.link().send_message(Msg::GetResident(ctx.props().id));
         } else {
@@ -57,18 +54,27 @@ impl Component for ResidentComponent {
                 .expect("history should be available")
                 .push(AppRoute::Login);
         }
+    }
+}
 
+impl Component for ResidentComponent {
+    type Message = Msg;
+    type Properties = PageProperties;
+
+    fn create(ctx: &Context<Self>) -> Self {
+        Self::get_resident(ctx);
         Self {
             resident: None,
             edit: false,
         }
     }
 
-    fn changed(&mut self, _ctx: &Context<Self>) -> bool {
+    fn changed(&mut self, ctx: &Context<Self>) -> bool {
         // Should only return "true" if new properties are different to
         // previously received properties.
-        // This component has no properties so we will always return "false".
-        false
+        debug!("Properties as changed {:?}", ctx.props());
+        Self::get_resident(ctx);
+        true
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
