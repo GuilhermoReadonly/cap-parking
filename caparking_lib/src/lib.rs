@@ -1,6 +1,7 @@
+use chrono::{Utc, DateTime};
 use log::*;
 use serde::{Deserialize, Serialize};
-
+use std::collections::HashMap;
 use std::error::Error;
 use std::fs::File;
 use std::io::{self, BufReader, Write};
@@ -32,10 +33,10 @@ pub struct LoginForm {
 
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq, Clone)]
 pub struct ResidentSafe {
-    pub id: u128,
+    pub id: ResidentId,
     pub name: String,
     pub login: String,
-    pub parking_spots: Vec<u32>,
+    pub parking_spots: Vec<ParkingId>,
 }
 
 impl From<Resident> for ResidentSafe {
@@ -50,26 +51,32 @@ impl From<Resident> for ResidentSafe {
 }
 
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq, Clone)]
+pub struct ResidentId(pub u128);
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Hash, Clone)]
+pub struct ParkingId(pub u32);
+
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq, Clone)]
 pub struct Resident {
-    pub id: u128,
+    pub id: ResidentId,
     pub name: String,
     pub login: String,
     pub password: String,
-    pub parking_spots: Vec<u32>,
+    pub parking_spots: Vec<ParkingId>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default, PartialEq, Clone)]
 pub struct ResidentPartial {
-    pub id: u128,
+    pub id: ResidentId,
     pub name: Option<String>,
     pub login: Option<String>,
     pub password: Option<String>,
-    pub parking_spots: Option<Vec<u32>>,
+    pub parking_spots: Option<Vec<ParkingId>>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]
 pub struct Db {
     pub residents: Vec<Resident>,
+    pub availabilities: HashMap<ParkingId, DateTime<Utc>>,
 }
 
 pub fn get_all_residents() -> Result<Vec<Resident>, Box<dyn Error>> {
@@ -85,7 +92,7 @@ pub fn get_resident(id: u128) -> Result<Option<Resident>, Box<dyn Error>> {
     let mut resident: Option<Resident> = None;
 
     for r in db.residents.into_iter() {
-        if r.id == id {
+        if r.id == ResidentId(id) {
             resident = Some(r);
             break;
         }
@@ -143,7 +150,7 @@ pub fn update_resident(resident_update: ResidentPartial) -> Result<Resident, Box
             write_db(&db)?;
             Ok(updated_resident)
         }
-        None => Err(format!("Resident {} not found", resident_update.id).into()),
+        None => Err(format!("Resident {} not found", resident_update.id.0).into()),
     }
 }
 

@@ -34,7 +34,7 @@ impl Component for HeaderComponent {
                 <Link<AppRoute> to={AppRoute::Residents}>{"Résidents"}</Link<AppRoute>>
                 {
                     match ctx.props().token.clone() {
-                        Some(t) => html!{<Link<AppRoute> to={AppRoute::Resident{ id: t.claims.sub.id }} classes={classes!("login-elt")}>{t.claims.sub.name}</Link<AppRoute>>},
+                        Some(t) => html!{<Link<AppRoute> to={AppRoute::Resident{ id: t.claims.sub.id.0 }} classes={classes!("login-elt")}>{t.claims.sub.name}</Link<AppRoute>>},
                         None => html!{<Link<AppRoute> to={AppRoute::Login} classes={classes!("login-elt")}>{"Login"}</Link<AppRoute>>},
                     }
                 }

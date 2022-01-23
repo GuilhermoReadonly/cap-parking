@@ -13,3 +13,4 @@ path = "src/lib.rs"
 log = "0.4.14"
 serde = "1.0.127"
 serde_json = "1.0.66"
+chrono = {version = "0.4.19", features = ["serde"]}

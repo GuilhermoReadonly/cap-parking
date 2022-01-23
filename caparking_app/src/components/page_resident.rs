@@ -82,7 +82,7 @@ impl Component for ResidentComponent {
             .props()
             .token
             .clone()
-            .map_or_else(|| false, |t| t.claims.sub.id == ctx.props().id);
+            .map_or_else(|| false, |t| t.claims.sub.id.0 == ctx.props().id);
         match (&self.resident, &self.edit) {
             (Some(r), false) => html! {
                 <>

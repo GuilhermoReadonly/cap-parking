@@ -89,7 +89,7 @@ pub fn put_resident(
     } else {
         let e = format!(
             "User {} can't modify other user {}",
-            token.decoded_token.sub.id, resident.id
+            token.decoded_token.sub.id.0, resident.id.0
         );
         error!("{}", e);
         ApiResponse::new(

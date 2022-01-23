@@ -74,9 +74,9 @@ impl Component for ResidentsComponent {
                             {
                                 html! {
                                     <tr>
-                                        <td>{item.resident.id}</td>
+                                        <td>{item.resident.id.0}</td>
                                         <td>
-                                            <Link<AppRoute> to={AppRoute::Resident{id:item.resident.id}}>
+                                            <Link<AppRoute> to={AppRoute::Resident{id:item.resident.id.0}}>
                                                 {&item.resident.name}
                                             </Link<AppRoute>>
                                         </td>
