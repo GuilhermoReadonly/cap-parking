@@ -56,6 +56,7 @@ impl Component for MainComponent {
         let cb = ctx.link().callback(|token: String| {
             log::info!("Callback activated: {:?}", token);
 
+            // can't use dangerous_insecure_decode_with_validation() because it seems to not compile to wasm
             let claims = dangerous_insecure_decode::<Claims>(
                 &token,
                 //&Validation::default(),

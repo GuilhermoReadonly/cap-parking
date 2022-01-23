@@ -38,7 +38,7 @@ impl Component for HeaderComponent {
                         None => html!{<Link<AppRoute> to={AppRoute::Login} classes={classes!("login-elt")}>{"Login"}</Link<AppRoute>>},
                     }
                 }
-                
+
             </div>
         }
     }
