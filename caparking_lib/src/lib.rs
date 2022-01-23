@@ -128,14 +128,16 @@ pub fn update_resident(resident_update: ResidentPartial) -> Result<Resident, Box
                 id: resident_update.id,
                 login: resident_update
                     .login
-                    .unwrap_or(found_resident.login.clone()),
-                name: resident_update.name.unwrap_or(found_resident.name.clone()),
+                    .unwrap_or_else(|| found_resident.login.clone()),
+                name: resident_update
+                    .name
+                    .unwrap_or_else(|| found_resident.name.clone()),
                 password: resident_update
                     .password
-                    .unwrap_or(found_resident.password.clone()),
+                    .unwrap_or_else(|| found_resident.password.clone()),
                 parking_spots: resident_update
                     .parking_spots
-                    .unwrap_or(found_resident.parking_spots.clone()),
+                    .unwrap_or_else(|| found_resident.parking_spots.clone()),
             };
             *found_resident = updated_resident.clone();
             write_db(&db)?;

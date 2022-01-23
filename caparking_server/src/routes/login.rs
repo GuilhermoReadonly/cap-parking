@@ -64,7 +64,10 @@ pub fn login(login_form: Json<LoginForm>, secret: &State<Secret>) -> ApiResponse
         (_, None) => {
             error!("Can't compute token expiration");
             ApiResponse::new(
-                Body::Err("{\"error\": \"Something terrible happened: Can't compute token expiration\"}".to_string()),
+                Body::Err(
+                    "{\"error\": \"Something terrible happened: Can't compute token expiration\"}"
+                        .to_string(),
+                ),
                 Status::ImATeapot,
             )
         }
