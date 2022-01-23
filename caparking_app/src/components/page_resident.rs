@@ -1,7 +1,7 @@
 use std::error::Error;
 
 use caparking_lib::{DecodedToken, ResidentSafe as ResidentLib};
-use log::{warn, debug};
+use log::{debug, warn};
 use web_sys::HtmlInputElement as InputElement;
 use yew::prelude::*;
 use yew_router::{history::History, prelude::RouterScopeExt};
@@ -43,8 +43,8 @@ pub(super) struct PageProperties {
     pub token: Option<DecodedToken>,
 }
 
-impl ResidentComponent{
-    fn get_resident(ctx: &Context<Self>){
+impl ResidentComponent {
+    fn get_resident(ctx: &Context<Self>) {
         if ctx.props().token.is_some() {
             ctx.link().send_message(Msg::GetResident(ctx.props().id));
         } else {
@@ -78,15 +78,25 @@ impl Component for ResidentComponent {
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
+        let allowed_to_edit = ctx
+            .props()
+            .token
+            .clone()
+            .map_or_else(|| false, |t| t.claims.sub.id == ctx.props().id);
         match (&self.resident, &self.edit) {
             (Some(r), false) => html! {
                 <>
                 <h2>{&r.resident.name}</h2>
                 <p>{format!("Login: {}", &r.resident.login)}</p>
                 <p>{format!("Parking: {:?}", &r.resident.parking_spots)}</p>
-                <button onclick={ctx.link().callback(|_| Msg::Edit)}> {"Modifier"} </button>
+                {
+                    if allowed_to_edit {
+                        html! {<button onclick={ctx.link().callback(|_| Msg::Edit)}> {"Modifier"} </button>}
+                    } else {
+                        html!{}
+                    }
+                }
                 </>
-
             },
             (Some(r), true) => {
                 let resident = r.resident.clone();
@@ -119,7 +129,6 @@ impl Component for ResidentComponent {
                         Msg::PutResident(resident.clone())
                     })}>{"Sauvegarder"}</button>
                     </>
-
                 }
             }
             _ => html! {
