@@ -42,7 +42,7 @@ impl<'r> FromRequest<'r> for SecurityGuard {
                         .0
                         .clone();
                     let decoded_token = decode::<Claims>(
-                        &t.0,
+                        t.0,
                         &DecodingKey::from_secret(secret.as_ref()),
                         &Validation::default(),
                     );

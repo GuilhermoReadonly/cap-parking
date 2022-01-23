@@ -113,7 +113,7 @@ impl Component for ResidentsComponent {
             Msg::GetResidentsResponse(response) => {
                 match response {
                     Ok(residents) => {
-                        self.residents = residents.into_iter().map(|r| Resident::from(r)).collect();
+                        self.residents = residents.into_iter().map(Resident::from).collect();
                     }
                     Err(e) => {
                         log::error!("Something terrible happened...: {:?}", e);

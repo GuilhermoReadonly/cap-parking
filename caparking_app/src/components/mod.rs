@@ -84,7 +84,7 @@ impl Component for MainComponent {
                                 AppRoute::Index => html!{<HomePageComponent/>},
                                 AppRoute::Home => html!{<HomePageComponent/>},
                                 AppRoute::Residents => html!{<ResidentsComponent token={token.clone()} />},
-                                AppRoute::Resident{id} => html!{<ResidentComponent id={id.clone()} token={token.clone()}/>},
+                                AppRoute::Resident{id} => html!{<ResidentComponent id={id} token={token.clone()}/>},
                                 AppRoute::Login => html!{<LoginPageComponent update_token_callback={cb.clone()}/>},
                             }
                         })} />

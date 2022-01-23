@@ -31,11 +31,11 @@ impl<T> ApiResponse<T> {
 impl<'r, T: Serialize> Responder<'r, 'static> for ApiResponse<T> {
     fn respond_to(self, req: &'r Request<'_>) -> response::Result<'static> {
         match self.body {
-            Body::Ok(t) => Response::build_from(t.respond_to(&req).unwrap())
+            Body::Ok(t) => Response::build_from(t.respond_to(req).unwrap())
                 .status(self.status)
                 .header(ContentType::JSON)
                 .ok(),
-            Body::Err(msg) => Response::build_from(msg.respond_to(&req).unwrap())
+            Body::Err(msg) => Response::build_from(msg.respond_to(req).unwrap())
                 .status(self.status)
                 .header(ContentType::JSON)
                 .ok(),

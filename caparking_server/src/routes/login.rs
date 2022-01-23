@@ -40,14 +40,14 @@ pub fn login(login_form: Json<LoginForm>, secret: &State<Secret>) -> ApiResponse
         (Ok(Some(_)), Some(_)) => {
             warn!("Bad login : bad password");
             ApiResponse::new(
-                Body::Err(format!("{{\"error\": \"Bad login\"}}")),
+                Body::Err("{\"error\": \"Bad login\"}".to_string()),
                 Status::Unauthorized,
             )
         }
         (Ok(None), _) => {
             warn!("Bad login : bad login");
             ApiResponse::new(
-                Body::Err(format!("{{\"error\": \"Bad login\"}}")),
+                Body::Err("{\"error\": \"Bad login\"}".to_string()),
                 Status::Unauthorized,
             )
         }
@@ -64,8 +64,7 @@ pub fn login(login_form: Json<LoginForm>, secret: &State<Secret>) -> ApiResponse
         (_, None) => {
             error!("Can't compute token expiration");
             ApiResponse::new(
-                Body::Err(format!(
-                    "{{\"error\": \"Something terrible happened: Can't compute token expiration\"}}")),
+                Body::Err("{\"error\": \"Something terrible happened: Can't compute token expiration\"}".to_string()),
                 Status::ImATeapot,
             )
         }

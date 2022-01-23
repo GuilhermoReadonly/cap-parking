@@ -43,7 +43,7 @@ pub async fn request<A: Serialize, B: for<'a> Deserialize<'a>>(
 
     info!("Request {verb} {url}");
 
-    opts.method(&verb);
+    opts.method(verb);
 
     if let Some(body) = body {
         let js_string = serde_json::to_string(&body).unwrap();

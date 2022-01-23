@@ -174,7 +174,7 @@ impl Component for ResidentComponent {
                 ctx.link().send_future(async move {
                     match request::<ResidentLib, ResidentLib>(
                         "PUT",
-                        &format!("/api/resident"),
+                        &"/api/resident".to_string(),
                         Some(resident),
                         token,
                     )
