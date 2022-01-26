@@ -1,0 +1,101 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'caparking_lib'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=caparking-server"
+                ],
+                "filter": {
+                    "name": "caparking_lib",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'capark-server'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=capark-server",
+                    "--package=caparking-server"
+                ],
+                "filter": {
+                    "name": "capark-server",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}/caparking_server"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'capark-server'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=capark-server",
+                    "--package=caparking-server"
+                ],
+                "filter": {
+                    "name": "capark-server",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}/caparking_server"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'capark-app'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=capark-app",
+                    "--package=caparking-app"
+                ],
+                "filter": {
+                    "name": "capark-app",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}/caparking_app"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'capark-app'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=capark-app",
+                    "--package=caparking-app"
+                ],
+                "filter": {
+                    "name": "capark-app",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}/caparking_app"
+        }
+    ]
+}

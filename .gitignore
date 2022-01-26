@@ -2,6 +2,5 @@
 /caparking_app/target
 /caparking_server/target
 **/*.rs.bk
-.vscode
 build.rs
 /caparking_app/dist
